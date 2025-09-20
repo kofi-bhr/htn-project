@@ -1,6 +1,11 @@
 "use client";
 
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 
 interface OnboardingFlowProps {
   onComplete: (data: OnboardingData) => void;
@@ -63,21 +68,24 @@ export default function OnboardingFlow({ onComplete, isProcessing }: OnboardingF
       case 0:
         return (
           <div className="text-center space-y-6">
-            <div className="w-24 h-24 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto">
-              <span className="text-white text-3xl font-bold">U</span>
+            <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center mx-auto">
+              <span className="text-primary-foreground text-2xl font-bold">
+                U
+              </span>
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-white mb-2">ready to forge your identity?</h2>
-              <p className="text-gray-300">
+              <h2 className="text-2xl font-bold text-foreground mb-2">ready to forge your identity?</h2>
+              <p className="text-muted-foreground">
                 we'll ask you a few questions and then create your unique nft identity on the solana blockchain
               </p>
             </div>
-            <button
+            <Button
               onClick={handleNext}
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-3 rounded-lg font-medium transition-all duration-200"
+              className="w-full"
+              size="lg"
             >
               let's get started
-            </button>
+            </Button>
           </div>
         );
 
@@ -86,64 +94,68 @@ export default function OnboardingFlow({ onComplete, isProcessing }: OnboardingF
           <div className="space-y-6">
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">age range</label>
-                <select
+                <label className="block text-sm font-medium text-foreground mb-2">age range</label>
+                <Select
                   value={formData.age}
-                  onChange={(e) => setFormData({...formData, age: e.target.value})}
-                  className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  onValueChange={(value) => setFormData({...formData, age: value})}
                 >
-                  <option value="">select your age range</option>
-                  <option value="18-24">18-24</option>
-                  <option value="25-34">25-34</option>
-                  <option value="35-44">35-44</option>
-                  <option value="45-54">45-54</option>
-                  <option value="55-64">55-64</option>
-                  <option value="65+">65+</option>
-                </select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="select your age range" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="18-24">18-24</SelectItem>
+                    <SelectItem value="25-34">25-34</SelectItem>
+                    <SelectItem value="35-44">35-44</SelectItem>
+                    <SelectItem value="45-54">45-54</SelectItem>
+                    <SelectItem value="55-64">55-64</SelectItem>
+                    <SelectItem value="65+">65+</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">what are you using this for?</label>
-                <select
+                <label className="block text-sm font-medium text-foreground mb-2">what are you using this for?</label>
+                <Select
                   value={formData.purpose}
-                  onChange={(e) => setFormData({...formData, purpose: e.target.value})}
-                  className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  onValueChange={(value) => setFormData({...formData, purpose: value})}
                 >
-                  <option value="">select your purpose</option>
-                  <option value="personal">personal identity</option>
-                  <option value="professional">professional networking</option>
-                  <option value="creative">creative projects</option>
-                  <option value="community">community building</option>
-                  <option value="other">other</option>
-                </select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="select your purpose" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="personal">personal identity</SelectItem>
+                    <SelectItem value="professional">professional networking</SelectItem>
+                    <SelectItem value="creative">creative projects</SelectItem>
+                    <SelectItem value="community">community building</SelectItem>
+                    <SelectItem value="other">other</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">where are you from?</label>
-                <input
+                <label className="block text-sm font-medium text-foreground mb-2">where are you from?</label>
+                <Input
                   type="text"
                   value={formData.location}
                   onChange={(e) => setFormData({...formData, location: e.target.value})}
                   placeholder="city, country"
-                  className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
               </div>
             </div>
 
             <div className="flex justify-between">
-              <button
+              <Button
                 onClick={handlePrevious}
-                className="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 border border-white/20"
+                variant="outline"
               >
                 back
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleNext}
                 disabled={!formData.age || !formData.purpose || !formData.location}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 disabled:cursor-not-allowed"
               >
                 next
-              </button>
+              </Button>
             </div>
           </div>
         );
@@ -151,38 +163,35 @@ export default function OnboardingFlow({ onComplete, isProcessing }: OnboardingF
       case 2:
         return (
           <div className="text-center space-y-6">
-            <div className="w-32 h-32 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto">
-              <svg className="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-32 h-32 bg-primary rounded-full flex items-center justify-center mx-auto">
+              <svg className="w-16 h-16 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-white mb-2">facial recognition</h2>
-              <p className="text-gray-300 mb-4">
+              <h2 className="text-2xl font-bold text-foreground mb-2">facial recognition</h2>
+              <p className="text-muted-foreground mb-4">
                 this step will be handled by sarthak - placeholder for now
               </p>
-              <div className="bg-yellow-500/20 border border-yellow-500/30 rounded-lg p-4">
-                <p className="text-yellow-200 text-sm">
-                  🚧 facial recognition module coming soon - sarthak is working on it
-                </p>
-              </div>
+              <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-200 border-yellow-500/30">
+                🚧 facial recognition module coming soon - sarthak is working on it
+              </Badge>
             </div>
             <div className="flex justify-between">
-              <button
+              <Button
                 onClick={handlePrevious}
-                className="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 border border-white/20"
+                variant="outline"
               >
                 back
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => {
                   setFormData({...formData, facialRecognitionComplete: true});
                   handleNext();
                 }}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200"
               >
                 skip for now
-              </button>
+              </Button>
             </div>
           </div>
         );
@@ -190,49 +199,51 @@ export default function OnboardingFlow({ onComplete, isProcessing }: OnboardingF
       case 3:
         return (
           <div className="space-y-6">
-            <div className="bg-white/10 rounded-lg p-6 border border-white/20">
-              <h3 className="text-lg font-semibold text-white mb-4">review your identity</h3>
-              <div className="space-y-3">
+            <Card>
+              <CardHeader>
+                <CardTitle>review your identity</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-300">age range:</span>
-                  <span className="text-white">{formData.age}</span>
+                  <span className="text-muted-foreground">age range:</span>
+                  <span className="text-foreground">{formData.age}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-300">purpose:</span>
-                  <span className="text-white">{formData.purpose}</span>
+                  <span className="text-muted-foreground">purpose:</span>
+                  <span className="text-foreground">{formData.purpose}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-300">location:</span>
-                  <span className="text-white">{formData.location}</span>
+                  <span className="text-muted-foreground">location:</span>
+                  <span className="text-foreground">{formData.location}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-300">facial recognition:</span>
-                  <span className="text-white">{formData.facialRecognitionComplete ? 'completed' : 'skipped'}</span>
+                  <span className="text-muted-foreground">facial recognition:</span>
+                  <span className="text-foreground">{formData.facialRecognitionComplete ? 'completed' : 'skipped'}</span>
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
 
             <div className="flex justify-between">
-              <button
+              <Button
                 onClick={handlePrevious}
-                className="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 border border-white/20"
+                variant="outline"
               >
                 back
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleSubmit}
                 disabled={isProcessing}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 disabled:cursor-not-allowed"
+                className="w-48"
               >
                 {isProcessing ? (
                   <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>
                     <span>forging identity...</span>
                   </div>
                 ) : (
                   'forge my identity'
                 )}
-              </button>
+              </Button>
             </div>
           </div>
         );
@@ -243,35 +254,36 @@ export default function OnboardingFlow({ onComplete, isProcessing }: OnboardingF
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="max-w-2xl w-full">
         {/* Progress Bar */}
         <div className="mb-8">
-          <div className="flex justify-between text-sm text-gray-400 mb-2">
+          <div className="flex justify-between text-sm text-muted-foreground mb-2">
             <span>step {currentStep + 1} of {steps.length}</span>
             <span>{Math.round(((currentStep + 1) / steps.length) * 100)}% complete</span>
           </div>
-          <div className="w-full bg-white/20 rounded-full h-2">
+          <div className="w-full bg-muted rounded-full h-2">
             <div 
-              className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-300"
+              className="bg-primary h-2 rounded-full transition-all duration-300"
               style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
             ></div>
           </div>
         </div>
 
         {/* Step Content */}
-        <div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 p-8">
-          <div className="text-center mb-6">
-            <h1 className="text-3xl font-bold text-white mb-2">
+        <Card>
+          <CardHeader className="text-center">
+            <CardTitle className="text-3xl">
               {steps[currentStep].title}
-            </h1>
-            <p className="text-gray-300">
+            </CardTitle>
+            <CardDescription className="text-lg">
               {steps[currentStep].subtitle}
-            </p>
-          </div>
-
-          {renderStepContent()}
-        </div>
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {renderStepContent()}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

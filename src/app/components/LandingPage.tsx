@@ -1,6 +1,9 @@
 "use client";
 
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 interface LandingPageProps {
   onForgeIdentity: () => void;
@@ -9,115 +12,222 @@ interface LandingPageProps {
 
 export default function LandingPage({ onForgeIdentity, isForging }: LandingPageProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-black/20 backdrop-blur-sm border-b border-white/10">
+      <header className="border-b bg-card">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">U</span>
+              <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center shadow-lg">
+                <span className="text-primary-foreground font-bold text-sm">U</span>
               </div>
-              <h1 className="text-xl font-bold text-white">Project Umoja</h1>
+              <span className="text-xl font-bold text-foreground">Project Umoja</span>
             </div>
-            <WalletMultiButton className="!bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 !text-white !border-0 !rounded-lg !px-6 !py-2 !font-medium" />
+            
+            {/* Navigation */}
+            <nav className="hidden md:flex space-x-8">
+              <a href="#home" className="text-muted-foreground hover:text-primary font-medium transition-colors duration-300">Home</a>
+              <a href="#about" className="text-muted-foreground hover:text-primary font-medium transition-colors duration-300">About</a>
+              <a href="#features" className="text-muted-foreground hover:text-primary font-medium transition-colors duration-300">Features</a>
+              <a href="#contact" className="text-muted-foreground hover:text-primary font-medium transition-colors duration-300">Contact</a>
+            </nav>
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="text-center">
-          {/* Main Heading */}
-          <h1 className="text-5xl md:text-7xl font-bold text-white mb-8 leading-tight">
-            Forge Your
-            <span className="block bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-              Digital Identity
-            </span>
+      <section id="home" className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 overflow-hidden">
+        {/* Subtle Background Effects */}
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-accent/10 rounded-full blur-2xl animate-pulse delay-500"></div>
+        </div>
+        
+        <div className="relative text-center max-w-5xl mx-auto z-10">
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-black text-foreground mb-8 leading-tight">
+            Your Identity. Your Capital. Your Future.
           </h1>
           
-          {/* Subtitle */}
-          <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-            Create a unique, verifiable digital identity on the Solana blockchain. 
-            Your identity is yours forever, secured by cryptography and stored immutably.
+          <p className="text-xl sm:text-2xl lg:text-3xl text-muted-foreground mb-12 font-light max-w-4xl mx-auto leading-relaxed">
+            Financial inclusion for the 1.4B ALICEs worldwide.
           </p>
-
-          {/* Features Grid */}
-          <div className="grid md:grid-cols-3 gap-8 mb-16">
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
-              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
+          
+          <Button 
+            onClick={onForgeIdentity}
+            size="lg"
+            className="text-xl font-bold px-12 py-6"
+            disabled={isForging}
+          >
+            {isForging ? (
+              <div className="flex items-center space-x-2">
+                <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>
+                <span>Forging Identity...</span>
               </div>
-              <h3 className="text-lg font-semibold text-white mb-2">Secure</h3>
-              <p className="text-gray-300 text-sm">
-                Your identity is protected by blockchain cryptography and cannot be tampered with.
-              </p>
-            </div>
-
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
-              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-white mb-2">Verifiable</h3>
-              <p className="text-gray-300 text-sm">
-                Anyone can verify your identity authenticity using the blockchain.
-              </p>
-            </div>
-
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
-              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-white mb-2">Instant</h3>
-              <p className="text-gray-300 text-sm">
-                Create your identity in seconds with Solana's fast and low-cost transactions.
-              </p>
-            </div>
-          </div>
-
-          {/* CTA Section */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold text-white mb-4">
-              Ready to Begin Your Journey?
-            </h2>
-            <p className="text-gray-300 mb-8">
-              Connect your wallet and forge your unique digital identity on the Solana blockchain.
-            </p>
-            
-            <button
-              onClick={onForgeIdentity}
-              disabled={isForging}
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-700 text-white px-12 py-4 rounded-lg text-lg font-semibold transition-all duration-200 transform hover:scale-105 disabled:hover:scale-100 disabled:cursor-not-allowed"
-            >
-              {isForging ? (
-                <div className="flex items-center space-x-2">
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>Forging Identity...</span>
-                </div>
-              ) : (
-                'Forge Your Identity'
-              )}
-            </button>
-            
-            <p className="text-xs text-gray-400 mt-4">
-              * This will mint a unique NFT representing your digital identity
-            </p>
+            ) : (
+              'Connect Wallet & Create Identity'
+            )}
+          </Button>
+          
+          {/* Illustration Placeholder */}
+          <div className="mt-16 flex justify-center">
+            <Card className="w-64 h-32">
+              <CardContent className="flex items-center justify-center h-full">
+                <span className="text-muted-foreground text-lg font-medium">Illustration</span>
+              </CardContent>
+            </Card>
           </div>
         </div>
-      </main>
+      </section>
+
+      {/* Alice's Story Section */}
+      <section id="about" className="py-24 bg-muted/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            {/* Image Placeholder */}
+            <div className="flex justify-center lg:justify-start">
+              <Card className="w-80 h-96">
+                <CardContent className="flex items-center justify-center h-full">
+                  <span className="text-muted-foreground text-lg font-medium">Alice Image</span>
+                </CardContent>
+              </Card>
+            </div>
+            
+            <div className="space-y-8">
+              <h2 className="text-5xl sm:text-6xl font-black text-foreground mb-8">
+                Meet Alice
+              </h2>
+              
+              <p className="text-xl text-muted-foreground leading-relaxed mb-8">
+                Alice represents the 1.4B people worldwide who are Asset-Limited, Income-Constrained, but Employed. Traditional banks can't serve her, but Project Umoja helps her thrive.
+              </p>
+              
+              <blockquote className="text-3xl sm:text-4xl font-bold text-primary italic border-l-4 border-primary pl-6">
+                "The system wasn't built for her. So we built Umoja."
+              </blockquote>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="py-24 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-20">
+            <h2 className="text-5xl sm:text-6xl font-black text-foreground mb-6">
+              Why Project Umoja?
+            </h2>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Feature 1 */}
+            <Card className="group hover:shadow-lg transform hover:-translate-y-2 transition-all duration-300">
+              <CardHeader>
+                <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mb-8 shadow-lg">
+                  <div className="w-10 h-10 bg-primary-foreground rounded-full"></div>
+                </div>
+                <CardTitle className="text-2xl">
+                  Self-Sovereign Identity
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground leading-relaxed">
+                  Minted as a soulbound NFT you own forever.
+                </p>
+              </CardContent>
+            </Card>
+            
+            {/* Feature 2 */}
+            <Card className="group hover:shadow-lg transform hover:-translate-y-2 transition-all duration-300">
+              <CardHeader>
+                <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mb-8 shadow-lg">
+                  <div className="w-10 h-10 bg-primary-foreground rounded-full"></div>
+                </div>
+                <CardTitle className="text-2xl">
+                  Reputation Tokens
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground leading-relaxed">
+                  Every repaid loan builds your blockchain-based credit score.
+                </p>
+              </CardContent>
+            </Card>
+            
+            {/* Feature 3 */}
+            <Card className="group hover:shadow-lg transform hover:-translate-y-2 transition-all duration-300">
+              <CardHeader>
+                <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mb-8 shadow-lg">
+                  <div className="w-10 h-10 bg-primary-foreground rounded-full"></div>
+                </div>
+                <CardTitle className="text-2xl">
+                  Microloans Powered by AI
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground leading-relaxed">
+                  Data-validated loans assessed with Wolfram-powered algorithms.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Impact Section */}
+      <section className="py-24 bg-muted/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-20">
+            <h2 className="text-5xl sm:text-6xl font-black text-foreground mb-6">
+              Our Impact
+            </h2>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-12">
+            {/* Stat 1 */}
+            <div className="text-center group">
+              <div className="text-6xl sm:text-7xl font-black text-primary mb-4 group-hover:scale-110 transition-transform duration-300">
+                1.4B
+              </div>
+              <p className="text-xl text-muted-foreground font-medium">People Represented</p>
+              <div className="mt-6 h-1 bg-primary rounded-full"></div>
+            </div>
+            
+            {/* Stat 2 */}
+            <div className="text-center group">
+              <div className="text-6xl sm:text-7xl font-black text-primary mb-4 group-hover:scale-110 transition-transform duration-300">
+                100+
+              </div>
+              <p className="text-xl text-muted-foreground font-medium">Microloans Simulated</p>
+              <div className="mt-6 h-1 bg-primary rounded-full"></div>
+            </div>
+            
+            {/* Stat 3 */}
+            <div className="text-center group">
+              <div className="text-6xl sm:text-7xl font-black text-primary mb-4 group-hover:scale-110 transition-transform duration-300">
+                ∞
+              </div>
+              <p className="text-xl text-muted-foreground font-medium">Infinite Potential</p>
+              <div className="mt-6 h-1 bg-primary rounded-full"></div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Footer */}
-      <footer className="bg-black/20 backdrop-blur-sm border-t border-white/10 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-gray-400 text-sm">
-            Built on Solana • Powered by Metaplex • Secured by Cryptography
-          </p>
+      <footer className="bg-card text-foreground py-16 border-t">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row justify-between items-center">
+            <div className="mb-4 sm:mb-0">
+              <p className="text-muted-foreground text-lg">
+                Built for Hack the Nest 2025.
+              </p>
+            </div>
+            <div>
+              <p className="text-xl font-bold text-foreground">Team Umoja</p>
+            </div>
+          </div>
         </div>
       </footer>
     </div>
