@@ -5,6 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import 'katex/dist/katex.min.css';
+import { InlineMath, BlockMath } from 'react-katex';
 
 export default function AboutPage() {
   return (
@@ -98,7 +101,7 @@ export default function AboutPage() {
                     Uses Kalman filtering to extract true economic capacity from noisy income data, incorporating verified credentials and education.
                   </p>
                   <div className="text-xs font-mono text-muted-foreground">
-                    Formula: H_i(t) = E[θ_t | y_1:t] × (1 + Σ δ_j c_ij)
+                    Formula: <InlineMath math="H_i(t) = E[\theta_t | y_{1:t}] \times (1 + \sum \delta_j c_{ij})" />
                   </div>
                 </div>
 
@@ -114,7 +117,7 @@ export default function AboutPage() {
                     Quantifies community networks as collateral through verified endorsements weighted by network distance and endorser credibility.
                   </p>
                   <div className="text-xs font-mono text-muted-foreground">
-                    Formula: S_i(t) = Σ (v_ji × U_j(t-1)) / d(i,j)
+                    Formula: <InlineMath math="S_i(t) = \sum \frac{v_{ji} \times U_j(t-1)}{d(i,j)}" />
                   </div>
                 </div>
 
@@ -130,7 +133,7 @@ export default function AboutPage() {
                     Creates costly signaling through non-transferable Reputation Tokens linked to successful loan repayments with streaking bonuses.
                   </p>
                   <div className="text-xs font-mono text-muted-foreground">
-                    Formula: R_i(t) = Σ λ^k × tanh(L_k/C) × I(repaid_k)
+                    Formula: <InlineMath math="R_i(t) = \sum \lambda^k \times \tanh\left(\frac{L_k}{C}\right) \times I(\text{repaid}_k)" />
                   </div>
                 </div>
 
@@ -146,7 +149,7 @@ export default function AboutPage() {
                     Measures financial discipline through time discount rates and loss aversion inferred from savings patterns and risk management behaviors.
                   </p>
                   <div className="text-xs font-mono text-muted-foreground">
-                    Formula: B_i(t) = k1/log(1+beta_i) + k2*gamma_i
+                    Formula: <InlineMath math="B_i(t) = \frac{k_1}{\log(1+\hat{\beta}_i)} + k_2 \hat{\gamma}_i" />
                   </div>
                 </div>
               </div>
@@ -166,10 +169,10 @@ export default function AboutPage() {
                 <h4 className="font-semibold mb-4 font-mono">EFIS Score Formula</h4>
                 <div className="text-center space-y-4">
                   <div className="text-2xl font-mono">
-                    U_i(t) = w_h × H_i(t) + w_s × S_i(t) + w_r × R_i(t) + w_b × B_i(t)
+                    <BlockMath math="\mathcal{U}_i(t) = \omega_H \times H_i(t) + \omega_S \times S_i(t) + \omega_R \times R_i(t) + \omega_B \times B_i(t)" />
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Where each component k has weight w_k with Σw_k = 1, calibrated using machine learning on historical repayment data.
+                    Where each component k has weight <InlineMath math="\omega_k" /> with <InlineMath math="\sum \omega_k = 1" />, calibrated using machine learning on historical repayment data.
                   </p>
                 </div>
               </div>
