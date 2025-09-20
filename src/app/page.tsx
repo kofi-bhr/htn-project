@@ -187,9 +187,9 @@ export default function Home() {
 
   // If wallet is connected but no profile exists, show landing page
   if (publicKey && !profile) {
-    return <LandingPage onForgeIdentity={startOnboarding} isForging={isForging} />;
+    return <LandingPage onStartOnboarding={startOnboarding} isForging={isForging} />;
   }
 
-  // If no wallet connected, show cofounder's beautiful landing page with wallet integration
-  return <LandingPage onForgeIdentity={startOnboarding} isForging={isForging} />;
+  // If no wallet connected, show clean landing page with 2-step CTA
+  return <LandingPage onStartOnboarding={startOnboarding} isForging={isForging} />;
 }

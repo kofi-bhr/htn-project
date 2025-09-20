@@ -173,7 +173,7 @@ export default function OnboardingFlow({ onComplete, isProcessing }: OnboardingF
               <p className="text-muted-foreground mb-4">
                 this step will be handled by sarthak - placeholder for now
               </p>
-              <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-200 border-yellow-500/30">
+              <Badge variant="secondary">
                 🚧 facial recognition module coming soon - sarthak is working on it
               </Badge>
             </div>
