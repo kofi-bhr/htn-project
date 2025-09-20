@@ -10,12 +10,53 @@ import 'katex/dist/katex.min.css';
 import { InlineMath } from 'react-katex';
 import WorldMap from '@/components/ui/world-map';
 import { motion } from 'motion/react';
+import { useState, useEffect } from 'react';
 
 interface LandingPageProps {
   onStartOnboarding: () => void;
   isForging: boolean;
   hasProfile?: boolean;
   onGoToDashboard?: () => void;
+}
+
+interface TypewriterTextProps {
+  phrases: string[];
+}
+
+function TypewriterText({ phrases }: TypewriterTextProps) {
+  const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
+  const [currentText, setCurrentText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    const currentPhrase = phrases[currentPhraseIndex];
+    
+    const timeout = setTimeout(() => {
+      if (!isDeleting) {
+        if (currentText.length < currentPhrase.length) {
+          setCurrentText(currentPhrase.slice(0, currentText.length + 1));
+        } else {
+          setTimeout(() => setIsDeleting(true), 2000); // Pause before deleting
+        }
+      } else {
+        if (currentText.length > 0) {
+          setCurrentText(currentText.slice(0, -1));
+        } else {
+          setIsDeleting(false);
+          setCurrentPhraseIndex((prev) => (prev + 1) % phrases.length);
+        }
+      }
+    }, isDeleting ? 50 : 100);
+
+    return () => clearTimeout(timeout);
+  }, [currentText, currentPhraseIndex, isDeleting, phrases]);
+
+  return (
+    <span>
+      {currentText}
+      <span className="animate-pulse">|</span>
+    </span>
+  );
 }
 
 export default function LandingPage({ onStartOnboarding, isForging, hasProfile, onGoToDashboard }: LandingPageProps) {
@@ -28,12 +69,50 @@ export default function LandingPage({ onStartOnboarding, isForging, hasProfile, 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm font-mono">U</span>
+              <div className="w-10 h-10 flex items-center justify-center">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  {/* Circuit board style circular frame */}
+                  <circle cx="20" cy="20" r="18" stroke="#60A5FA" strokeWidth="1.5" fill="none"/>
+                  <circle cx="20" cy="20" r="14" stroke="#60A5FA" strokeWidth="1" fill="none"/>
+                  
+                  {/* Letter U */}
+                  <text x="20" y="26" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#60A5FA" fontFamily="Arial, sans-serif">U</text>
+                  
+                  {/* Left connecting lines and dots */}
+                  <line x1="2" y1="20" x2="8" y2="20" stroke="#60A5FA" strokeWidth="1"/>
+                  <line x1="2" y1="16" x2="8" y2="16" stroke="#60A5FA" strokeWidth="1"/>
+                  <line x1="2" y1="24" x2="8" y2="24" stroke="#60A5FA" strokeWidth="1"/>
+                  <circle cx="2" cy="20" r="1.5" fill="#60A5FA"/>
+                  <circle cx="2" cy="16" r="1.5" fill="#60A5FA"/>
+                  <circle cx="2" cy="24" r="1.5" fill="#60A5FA"/>
+                  
+                  {/* Right connecting lines and dots */}
+                  <line x1="32" y1="20" x2="38" y2="20" stroke="#60A5FA" strokeWidth="1"/>
+                  <line x1="32" y1="16" x2="38" y2="16" stroke="#60A5FA" strokeWidth="1"/>
+                  <line x1="32" y1="24" x2="38" y2="24" stroke="#60A5FA" strokeWidth="1"/>
+                  <circle cx="38" cy="20" r="1.5" fill="#60A5FA"/>
+                  <circle cx="38" cy="16" r="1.5" fill="#60A5FA"/>
+                  <circle cx="38" cy="24" r="1.5" fill="#60A5FA"/>
+                  
+                  {/* Top and bottom curved lines */}
+                  <path d="M 20 2 Q 20 8 20 8" stroke="#60A5FA" strokeWidth="1" fill="none"/>
+                  <path d="M 20 32 Q 20 38 20 38" stroke="#60A5FA" strokeWidth="1" fill="none"/>
+                  <circle cx="20" cy="2" r="1.5" fill="#60A5FA"/>
+                  <circle cx="20" cy="38" r="1.5" fill="#60A5FA"/>
+                </svg>
               </div>
               <span className="text-xl font-bold text-foreground font-mono">Project Umoja</span>
             </div>
             <div className="flex items-center space-x-4">
+              <a href="#about" className="text-sm font-mono text-muted-foreground hover:text-foreground transition-colors">
+                About
+              </a>
+              <a href="#features" className="text-sm font-mono text-muted-foreground hover:text-foreground transition-colors">
+                Features
+              </a>
+              <a href="#impact" className="text-sm font-mono text-muted-foreground hover:text-foreground transition-colors">
+                Impact
+              </a>
               <Link href="/calculator">
                 <Button variant="outline" size="sm" className="font-mono">
                   Calculator
@@ -88,20 +167,10 @@ export default function LandingPage({ onStartOnboarding, isForging, hasProfile, 
         <div className="max-w-7xl mx-auto relative z-10">
           {/* Centered Heading */}
           <div className="text-center mb-16">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground mb-6 font-mono leading-tight">
-              {"Your Identity. Your Capital. Your Future.".split(" ").map((word, idx) => (
-                <motion.span
-                  key={idx}
-                  className="inline-block mr-2"
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ duration: 0.6, delay: idx * 0.1 }}
-                >
-                  {word}
-                </motion.span>
-              ))}
-            </h1>
-            <p className="text-base sm:text-lg text-muted-foreground max-w-3xl mx-auto">
+             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6 font-mono leading-tight">
+               <TypewriterText phrases={["Your Identity.", "Your Capital.", "Your Future."]} />
+             </h1>
+             <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto">
               Financial inclusion for the{" "}
               <span className="text-primary">
                 {"1.4B_ALICEs".split("").map((char, idx) => (
@@ -127,11 +196,11 @@ export default function LandingPage({ onStartOnboarding, isForging, hasProfile, 
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.5 }}
             >
-              <Card className="p-8 space-y-6">
-              <div className="text-center">
-                <CardTitle className="text-xl font-mono mb-2">
-                  {hasProfile ? 'Welcome Back!' : 'Get Started with Project Umoja'}
-                </CardTitle>
+               <Card className="p-8 space-y-6 border-4">
+                 <div className="text-center">
+                   <CardTitle className="text-2xl font-bold font-mono mb-2">
+                     {hasProfile ? 'Welcome Back!' : 'Get Started with Project Umoja'}
+                   </CardTitle>
                 <CardDescription className="font-sans">
                   {hasProfile 
                     ? 'Your digital identity is ready. Access your dashboard or learn more about EFIS.'
@@ -142,11 +211,11 @@ export default function LandingPage({ onStartOnboarding, isForging, hasProfile, 
 
               {hasProfile ? (
                 <div className="space-y-4">
-                  <Card className="p-4 flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold font-mono">✓</div>
-                      <span className="text-base font-medium font-sans">Identity Created</span>
-                    </div>
+                   <Card className="p-4 flex items-center justify-between border-4">
+                     <div className="flex items-center space-x-3">
+                       <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold font-mono">✓</div>
+                       <span className="text-lg font-medium font-sans">Identity Created</span>
+                     </div>
                     <Badge className="bg-primary text-primary-foreground font-mono">Complete</Badge>
                   </Card>
 
@@ -182,12 +251,12 @@ export default function LandingPage({ onStartOnboarding, isForging, hasProfile, 
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {/* Step 1: Connect Wallet */}
-                  <Card className="p-4 flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center text-secondary-foreground font-bold font-mono">1</div>
-                      <span className="text-base font-medium font-sans">Connect Your Wallet</span>
-                    </div>
+                   {/* Step 1: Connect Wallet */}
+                   <Card className="p-4 flex items-center justify-between border-4">
+                     <div className="flex items-center space-x-3">
+                       <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center text-secondary-foreground font-bold font-mono">1</div>
+                       <span className="text-lg font-medium font-sans">Connect Your Wallet</span>
+                     </div>
                     {connected ? (
                       <Badge className="bg-primary text-primary-foreground font-mono">✓ Connected</Badge>
                     ) : (
@@ -195,12 +264,12 @@ export default function LandingPage({ onStartOnboarding, isForging, hasProfile, 
                     )}
                   </Card>
 
-                  {/* Step 2: Start Onboarding */}
-                  <Card className="p-4 flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center text-secondary-foreground font-bold font-mono">2</div>
-                      <span className="text-base font-medium font-sans">Start Onboarding</span>
-                    </div>
+                   {/* Step 2: Start Onboarding */}
+                   <Card className="p-4 flex items-center justify-between border-4">
+                     <div className="flex items-center space-x-3">
+                       <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center text-secondary-foreground font-bold font-mono">2</div>
+                       <span className="text-lg font-medium font-sans">Start Onboarding</span>
+                     </div>
                     <Button
                       onClick={onStartOnboarding}
                       disabled={!connected || isForging}
@@ -252,20 +321,20 @@ export default function LandingPage({ onStartOnboarding, isForging, hasProfile, 
       <section className="py-20 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-semibold text-foreground mb-6 font-mono">
-              The Problem We Solve
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+             <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-6 font-mono">
+               The Problem We Solve
+             </h2>
+             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               Traditional credit scoring excludes 1.4B people worldwide. We use mathematics to bridge this gap.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-12">
-            {/* The Problem */}
-            <Card className="p-8">
-              <CardHeader>
-                <CardTitle className="text-xl font-mono text-destructive">The Problem</CardTitle>
-              </CardHeader>
+             {/* The Problem */}
+             <Card className="p-8 border-4 bg-card">
+               <CardHeader>
+                 <CardTitle className="text-2xl font-bold font-mono text-destructive">The Problem</CardTitle>
+               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3">
                   <div className="flex items-center space-x-3">
@@ -291,11 +360,11 @@ export default function LandingPage({ onStartOnboarding, isForging, hasProfile, 
               </CardContent>
             </Card>
 
-            {/* The Solution */}
-            <Card className="p-8">
-              <CardHeader>
-                <CardTitle className="text-xl font-mono text-primary">Our Solution</CardTitle>
-              </CardHeader>
+             {/* The Solution */}
+             <Card className="p-8 border-4 bg-card">
+               <CardHeader>
+                 <CardTitle className="text-2xl font-bold font-mono text-primary">Our Solution</CardTitle>
+               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3">
                   <div className="flex items-center space-x-3">
@@ -341,10 +410,10 @@ export default function LandingPage({ onStartOnboarding, isForging, hasProfile, 
             </div>
 
             <div className="space-y-8">
-              <h2 className="text-3xl sm:text-4xl font-semibold text-foreground mb-6 font-mono">
-                Meet Alice
-              </h2>
-              <p className="text-lg text-muted-foreground leading-relaxed mb-6 font-sans">
+               <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-6 font-mono">
+                 Meet Alice
+               </h2>
+               <p className="text-xl text-muted-foreground leading-relaxed mb-6 font-sans">
                 Alice represents the 1.4B people worldwide who are Asset-Limited, Income-Constrained, but Employed. Traditional banks can't serve her, but Project Umoja helps her thrive.
               </p>
               <blockquote className="text-xl sm:text-2xl font-semibold text-primary italic border-l-4 border-primary pl-6 font-mono">
@@ -359,19 +428,19 @@ export default function LandingPage({ onStartOnboarding, isForging, hasProfile, 
       <section id="features" className="py-20 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
-            <h2 className="text-3xl sm:text-4xl font-semibold text-foreground mb-6 font-mono">
-              Why Project Umoja?
-            </h2>
+             <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-6 font-mono">
+               Why Project Umoja?
+             </h2>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {/* Feature 1 */}
-            <Card className="group hover:shadow-lg transform hover:-translate-y-2 transition-all duration-300">
+            <Card className="group hover:shadow-lg transform hover:-translate-y-2 transition-all duration-300 border-4">
               <CardHeader>
                 <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mb-8 shadow-lg">
                   <div className="w-10 h-10 bg-primary-foreground rounded-full"></div>
                 </div>
-                <CardTitle className="text-xl font-mono">
+                <CardTitle className="text-2xl font-bold font-mono">
                   Self-Sovereign Identity
                 </CardTitle>
               </CardHeader>
@@ -383,12 +452,12 @@ export default function LandingPage({ onStartOnboarding, isForging, hasProfile, 
             </Card>
 
             {/* Feature 2 */}
-            <Card className="group hover:shadow-lg transform hover:-translate-y-2 transition-all duration-300">
+            <Card className="group hover:shadow-lg transform hover:-translate-y-2 transition-all duration-300 border-4">
               <CardHeader>
                 <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mb-8 shadow-lg">
                   <div className="w-10 h-10 bg-primary-foreground rounded-full"></div>
                 </div>
-                <CardTitle className="text-xl font-mono">
+                <CardTitle className="text-2xl font-bold font-mono">
                   Reputation Tokens
                 </CardTitle>
               </CardHeader>
@@ -400,12 +469,12 @@ export default function LandingPage({ onStartOnboarding, isForging, hasProfile, 
             </Card>
 
             {/* Feature 3 */}
-            <Card className="group hover:shadow-lg transform hover:-translate-y-2 transition-all duration-300">
+            <Card className="group hover:shadow-lg transform hover:-translate-y-2 transition-all duration-300 border-4">
               <CardHeader>
                 <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mb-8 shadow-lg">
                   <div className="w-10 h-10 bg-primary-foreground rounded-full"></div>
                 </div>
-                <CardTitle className="text-xl font-mono">
+                <CardTitle className="text-2xl font-bold font-mono">
                   Microloans Powered by AI
                 </CardTitle>
               </CardHeader>
@@ -420,12 +489,12 @@ export default function LandingPage({ onStartOnboarding, isForging, hasProfile, 
       </section>
 
       {/* Impact Section */}
-      <section className="py-20 bg-muted/30">
+      <section id="impact" className="py-20 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
-            <h2 className="text-3xl sm:text-4xl font-semibold text-foreground mb-6 font-mono">
-              Our Impact
-            </h2>
+             <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-6 font-mono">
+               Our Impact
+             </h2>
           </div>
 
           <div className="grid md:grid-cols-3 gap-12">
