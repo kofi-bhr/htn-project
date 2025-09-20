@@ -77,6 +77,17 @@ export default function LandingPage({ onStartOnboarding, isForging }: LandingPag
                 </div>
               </div>
 
+              {/* Mathematical Foundation */}
+              <div className="bg-muted/50 p-6 rounded-lg">
+                <h3 className="text-lg font-semibold mb-3 font-mono">the mathematics of inclusion</h3>
+                <p className="text-sm text-muted-foreground mb-3">
+                  we solve information asymmetry with the equitable financial inclusion score (efis), using kalman filtering to extract true economic capacity from noisy income data and signaling theory to build reputation through blockchain tokens.
+                </p>
+                <div className="text-xs font-mono text-muted-foreground">
+                  U_i(t) = w_h × H_i(t) + w_s × S_i(t) + w_r × R_i(t) + w_b × B_i(t)
+                </div>
+              </div>
+
               {/* CTA Button */}
               <div className="pt-4">
                 <Button

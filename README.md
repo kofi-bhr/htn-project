@@ -2,6 +2,28 @@
 
 a next.js 14 application that lets users forge their digital identity on the solana blockchain using nfts and supabase for data persistence. 0% vibecoded.
 
+## the story of alice
+
+i want to start by telling you a story about a woman named alice. she's a low-income entrepreneur and a mother, striving to build a better future for her children. but there's just one caveat. she doesn't have a bank account.
+
+no bank account means no formal credit, limited ownership, no way to build a financial identity. she is fundamentally invisible to the global economy. and what's terrifying is that alice is not just one person. she is 1.4 billion people across the world without a bank account.
+
+you see, alice isn't just a name. it's an acronym: asset-limited, income-constrained, but employed. her story is a global crisis.
+
+as technologists, we sought to understand the root of this problem. it's not just bureaucracy; it's a market failure driven by a core economic principle: information asymmetry. big banks have no data on alice. they can't price the risk of a loan, so they don't offer one. they see her not as a person, but as a void of information.
+
+for people like alice—refugees, immigrants, creators of color—the system isn't just broken; it was never built for them in the first place. and that's why we built a new system.
+
+this is project umoja. it's not a sim card; it's a globally accessible web platform that runs on any device with a browser. you sign up with a selfie, which serves as the foundation for your self-sovereign identity. we don't store this on a server. we mint it as a soulbound nft on the solana blockchain. it is a permanent, digital asset that you own.
+
+this nft is your key. it's your connection to a new financial ecosystem through which we can provide data-validated microloans.
+
+so how do we solve the information asymmetry problem? with mathematics. when alice requests a loan, our wolfram-powered oracle uses principles from the kalman filter—an algorithm used by nasa to navigate spacecraft with noisy data. it takes her plan and real-world economic indicators to produce a clear, probabilistic assessment of her project's viability.
+
+then, to build trust over time, we apply signaling theory. every repaid loan automatically mints a 'reputation token' to her wallet. it's a non-transferable, on-chain proof of her reliability. she is forging her own credit score in public on the blockchain.
+
+so let's return to the story of alice. she's no longer just an acronym. she's thriving. she's building her business, providing for her children. it's because project umoja became a part of her story. and we hope that you can, too.
+
 ## features
 
 - solana wallet integration: connect with phantom wallet

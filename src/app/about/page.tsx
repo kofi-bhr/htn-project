@@ -98,7 +98,7 @@ export default function AboutPage() {
                     Uses Kalman filtering to extract true economic capacity from noisy income data, incorporating verified credentials and education.
                   </p>
                   <div className="text-xs font-mono text-muted-foreground">
-                    Formula: H_i(t) = E[θ_t | y_{1:t}] × (1 + Σ δ_j c_{ij})
+                    Formula: H_i(t) = E[θ_t | y_1:t] × (1 + Σ δ_j c_ij)
                   </div>
                 </div>
 
@@ -114,7 +114,7 @@ export default function AboutPage() {
                     Quantifies community networks as collateral through verified endorsements weighted by network distance and endorser credibility.
                   </p>
                   <div className="text-xs font-mono text-muted-foreground">
-                    Formula: S_i(t) = Σ (v_{ji} × U_j(t-1)) / d(i,j)
+                    Formula: S_i(t) = Σ (v_ji × U_j(t-1)) / d(i,j)
                   </div>
                 </div>
 
@@ -146,7 +146,7 @@ export default function AboutPage() {
                     Measures financial discipline through time discount rates and loss aversion inferred from savings patterns and risk management behaviors.
                   </p>
                   <div className="text-xs font-mono text-muted-foreground">
-                    Formula: B_i(t) = k₁/log(1+β̂ᵢ) + k₂γ̂ᵢ
+                    Formula: B_i(t) = k1/log(1+beta_i) + k2*gamma_i
                   </div>
                 </div>
               </div>
@@ -166,10 +166,10 @@ export default function AboutPage() {
                 <h4 className="font-semibold mb-4 font-mono">EFIS Score Formula</h4>
                 <div className="text-center space-y-4">
                   <div className="text-2xl font-mono">
-                    𝒰ᵢ(t) = ωₕ × Hᵢ(t) + ωₛ × Sᵢ(t) + ωᵣ × Rᵢ(t) + ωᵦ × Bᵢ(t)
+                    U_i(t) = w_h × H_i(t) + w_s × S_i(t) + w_r × R_i(t) + w_b × B_i(t)
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Where each component k has weight ωₖ with Σωₖ = 1, calibrated using machine learning on historical repayment data.
+                    Where each component k has weight w_k with Σw_k = 1, calibrated using machine learning on historical repayment data.
                   </p>
                 </div>
               </div>
