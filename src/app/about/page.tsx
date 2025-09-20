@@ -17,8 +17,37 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm font-mono">U</span>
+              <div className="w-10 h-10 flex items-center justify-center">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  {/* Circuit board style circular frame */}
+                  <circle cx="20" cy="20" r="18" stroke="#60A5FA" strokeWidth="1.5" fill="none"/>
+                  <circle cx="20" cy="20" r="14" stroke="#60A5FA" strokeWidth="1" fill="none"/>
+                  
+                  {/* Letter U */}
+                  <text x="20" y="26" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#60A5FA" fontFamily="Arial, sans-serif">U</text>
+                  
+                  {/* Left connecting lines and dots */}
+                  <line x1="2" y1="20" x2="8" y2="20" stroke="#60A5FA" strokeWidth="1"/>
+                  <line x1="2" y1="16" x2="8" y2="16" stroke="#60A5FA" strokeWidth="1"/>
+                  <line x1="2" y1="24" x2="8" y2="24" stroke="#60A5FA" strokeWidth="1"/>
+                  <circle cx="2" cy="20" r="1.5" fill="#60A5FA"/>
+                  <circle cx="2" cy="16" r="1.5" fill="#60A5FA"/>
+                  <circle cx="2" cy="24" r="1.5" fill="#60A5FA"/>
+                  
+                  {/* Right connecting lines and dots */}
+                  <line x1="32" y1="20" x2="38" y2="20" stroke="#60A5FA" strokeWidth="1"/>
+                  <line x1="32" y1="16" x2="38" y2="16" stroke="#60A5FA" strokeWidth="1"/>
+                  <line x1="32" y1="24" x2="38" y2="24" stroke="#60A5FA" strokeWidth="1"/>
+                  <circle cx="38" cy="20" r="1.5" fill="#60A5FA"/>
+                  <circle cx="38" cy="16" r="1.5" fill="#60A5FA"/>
+                  <circle cx="38" cy="24" r="1.5" fill="#60A5FA"/>
+                  
+                  {/* Top and bottom curved lines */}
+                  <path d="M 20 2 Q 20 8 20 8" stroke="#60A5FA" strokeWidth="1" fill="none"/>
+                  <path d="M 20 32 Q 20 38 20 38" stroke="#60A5FA" strokeWidth="1" fill="none"/>
+                  <circle cx="20" cy="2" r="1.5" fill="#60A5FA"/>
+                  <circle cx="20" cy="38" r="1.5" fill="#60A5FA"/>
+                </svg>
               </div>
               <span className="text-xl font-bold text-foreground font-mono">Project Umoja</span>
             </Link>
