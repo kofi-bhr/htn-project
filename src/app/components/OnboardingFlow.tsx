@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import FacialRecognition from './FacialRecognition';
+import FaceAuth from '@/components/FaceAuth';
 
 interface OnboardingFlowProps {
   onComplete: (data: OnboardingData) => void;
@@ -223,13 +223,47 @@ export default function OnboardingFlow({ onComplete, isProcessing, mintingStatus
 
       case 2:
         return (
-          <FacialRecognition 
-            onComplete={() => {
-              setFormData({...formData, facialRecognitionComplete: true});
-              handleNext();
-            }}
-            onPrevious={handlePrevious}
-          />
+          <div className="space-y-6">
+            <div className="text-center">
+              <h3 className="text-xl font-semibold font-mono mb-2">Facial Recognition Setup</h3>
+              <p className="text-muted-foreground mb-4">
+                This creates a unique biometric signature stored securely on the blockchain. 
+                Your face data is encrypted and cannot be reconstructed.
+              </p>
+              <Badge variant="secondary" className="font-mono mb-6">
+                🔒 Blockchain Secured • Real Face Detection
+              </Badge>
+            </div>
+            
+            <FaceAuth
+              mode="register"
+              onEmbedding={async (embedding) => {
+                try {
+                  // Register the face embedding
+                  const response = await fetch('/api/face/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ embedding })
+                  });
+                  
+                  if (response.ok) {
+                    setFormData({...formData, facialRecognitionComplete: true});
+                    handleNext();
+                  } else {
+                    console.error('Failed to register face embedding');
+                  }
+                } catch (error) {
+                  console.error('Error registering face:', error);
+                }
+              }}
+            />
+            
+            <div className="flex justify-between">
+              <Button onClick={handlePrevious} variant="outline" className="font-mono">
+                ← Back
+              </Button>
+            </div>
+          </div>
         );
 
       case 3:
