@@ -12,18 +12,29 @@ import FacialRecognition from './FacialRecognition';
 interface OnboardingFlowProps {
   onComplete: (data: OnboardingData) => void;
   isProcessing: boolean;
+  mintingStatus?: string;
 }
 
 export interface OnboardingData {
+  name: string;
+  country: string;
+  occupation: string;
+  monthlyIncome: number;
+  businessPlan: string;
   age: string;
   purpose: string;
   location: string;
   facialRecognitionComplete: boolean;
 }
 
-export default function OnboardingFlow({ onComplete, isProcessing }: OnboardingFlowProps) {
+export default function OnboardingFlow({ onComplete, isProcessing, mintingStatus }: OnboardingFlowProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<OnboardingData>({
+    name: '',
+    country: '',
+    occupation: '',
+    monthlyIncome: 0,
+    businessPlan: '',
     age: '',
     purpose: '',
     location: '',
@@ -90,6 +101,61 @@ export default function OnboardingFlow({ onComplete, isProcessing }: OnboardingF
           <div className="space-y-6">
             <div className="space-y-4">
               <div>
+                <label className="block text-sm font-medium text-muted-foreground mb-2 font-mono">full name</label>
+                <Input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  placeholder="enter your full name"
+                  className="font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-muted-foreground mb-2 font-mono">country</label>
+                <Input
+                  type="text"
+                  value={formData.country}
+                  onChange={(e) => setFormData({...formData, country: e.target.value})}
+                  placeholder="enter your country"
+                  className="font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-muted-foreground mb-2 font-mono">occupation</label>
+                <Input
+                  type="text"
+                  value={formData.occupation}
+                  onChange={(e) => setFormData({...formData, occupation: e.target.value})}
+                  placeholder="enter your occupation"
+                  className="font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-muted-foreground mb-2 font-mono">monthly income (USD)</label>
+                <Input
+                  type="number"
+                  value={formData.monthlyIncome}
+                  onChange={(e) => setFormData({...formData, monthlyIncome: parseInt(e.target.value) || 0})}
+                  placeholder="enter your monthly income"
+                  className="font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-muted-foreground mb-2 font-mono">business plan</label>
+                <Input
+                  type="text"
+                  value={formData.businessPlan}
+                  onChange={(e) => setFormData({...formData, businessPlan: e.target.value})}
+                  placeholder="describe your business plan"
+                  className="font-mono"
+                />
+              </div>
+
+              <div>
                 <label className="block text-sm font-medium text-muted-foreground mb-2 font-mono">age range</label>
                 <Select
                   value={formData.age}
@@ -146,7 +212,7 @@ export default function OnboardingFlow({ onComplete, isProcessing }: OnboardingF
               </Button>
               <Button
                 onClick={handleNext}
-                disabled={!formData.age || !formData.purpose || !formData.location}
+                disabled={!formData.name || !formData.country || !formData.occupation || !formData.monthlyIncome || !formData.businessPlan || !formData.age || !formData.purpose || !formData.location}
                 className="font-mono"
               >
                 next
@@ -174,6 +240,26 @@ export default function OnboardingFlow({ onComplete, isProcessing }: OnboardingF
                 <CardTitle className="font-mono">review your identity</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground font-mono">name:</span>
+                  <span className="text-foreground font-mono">{formData.name}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground font-mono">country:</span>
+                  <span className="text-foreground font-mono">{formData.country}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground font-mono">occupation:</span>
+                  <span className="text-foreground font-mono">{formData.occupation}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground font-mono">monthly income:</span>
+                  <span className="text-foreground font-mono">${formData.monthlyIncome}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground font-mono">business plan:</span>
+                  <span className="text-foreground font-mono">{formData.businessPlan}</span>
+                </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground font-mono">age range:</span>
                   <span className="text-foreground font-mono">{formData.age}</span>
@@ -203,9 +289,16 @@ export default function OnboardingFlow({ onComplete, isProcessing }: OnboardingF
                 className="font-mono"
               >
                 {isProcessing ? (
-                  <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>
-                    <span>forging identity...</span>
+                  <div className="flex flex-col items-center space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>
+                      <span>forging identity...</span>
+                    </div>
+                    {mintingStatus && (
+                      <div className="text-sm text-muted-foreground font-mono">
+                        {mintingStatus}
+                      </div>
+                    )}
                   </div>
                 ) : (
                   'forge my identity'

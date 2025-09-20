@@ -1,19 +1,22 @@
 "use client";
 
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { useState, useEffect } from 'react';
 import { supabase, Profile } from '@/lib/supabaseClient';
 import LandingPage from './components/LandingPage';
 import OnboardingFlow, { OnboardingData } from './components/OnboardingFlow';
+import { createNFTService } from '@/lib/nftService';
 import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const { publicKey } = useWallet();
+  const { connection } = useConnection();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isForging, setIsForging] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [mintingStatus, setMintingStatus] = useState<string>('');
 
   // Check if user profile exists when wallet connects
   useEffect(() => {
@@ -65,24 +68,31 @@ export default function Home() {
 
     console.log('Starting identity forging process...');
     setIsForging(true);
+    setMintingStatus('Initializing NFT creation...');
 
     try {
-      // For now, let's create a mock NFT address and save the profile
-      // This will allow us to test the flow without dealing with Metaplex complexity
-      const mockNftAddress = `mock_nft_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      // Create NFT service instance
+      const nftService = createNFTService(connection, publicKey);
       
-      console.log('Creating mock NFT identity...');
+      setMintingStatus('Creating NFT metadata...');
+      console.log('Creating real NFT identity...');
       
-      // Simulate some processing time
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Create the actual NFT on Solana devnet
+      const { mintAddress, transactionSignature } = await nftService.createIdentityNFT(
+        publicKey.toString(),
+        onboardingData
+      );
       
-      console.log('Saving profile to Supabase...');
-      // Save profile to Supabase
+      setMintingStatus('Saving profile to database...');
+      console.log('NFT minted successfully:', mintAddress);
+      console.log('Transaction signature:', transactionSignature);
+      
+      // Save profile to Supabase with real NFT address
       const { data, error } = await supabase
         .from('profiles')
         .insert({
           wallet_address: publicKey.toString(),
-          nft_mint_address: mockNftAddress,
+          nft_mint_address: mintAddress,
         })
         .select()
         .single();
@@ -96,8 +106,10 @@ export default function Home() {
       console.log('Profile saved successfully:', data);
       setProfile(data);
       setShowOnboarding(false);
+      setMintingStatus('');
       
-      // Don't auto-redirect - let user choose when to go to dashboard
+      // Show success message with blockchain explorer link
+      alert(`🎉 Identity NFT minted successfully!\n\nNFT Address: ${mintAddress}\nTransaction: ${transactionSignature}\n\nView on Solscan: https://devnet.solscan.io/token/${mintAddress}`);
 
     } catch (error) {
       console.error('Error forging identity:', error);
@@ -111,6 +123,7 @@ export default function Home() {
       alert(errorMessage);
     } finally {
       setIsForging(false);
+      setMintingStatus('');
     }
   };
 
@@ -127,7 +140,7 @@ export default function Home() {
 
   // Show onboarding flow if user clicked to start
   if (showOnboarding) {
-    return <OnboardingFlow onComplete={forgeIdentity} isProcessing={isForging} />;
+    return <OnboardingFlow onComplete={forgeIdentity} isProcessing={isForging} mintingStatus={mintingStatus} />;
   }
 
   // Always show landing page (dashboard redirect is handled in useEffect)

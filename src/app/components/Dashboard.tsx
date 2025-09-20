@@ -264,15 +264,15 @@ export default function Dashboard({ profile }: DashboardProps) {
                       <Area
                         type="monotone"
                         dataKey="income"
-                        stroke="hsl(var(--chart-1))"
-                        fill="hsl(var(--chart-1))"
+                        stroke="oklch(var(--chart-1))"
+                        fill="oklch(var(--chart-1))"
                         fillOpacity={0.2}
                       />
                       <Area
                         type="monotone"
                         dataKey="expenses"
-                        stroke="hsl(var(--chart-2))"
-                        fill="hsl(var(--chart-2))"
+                        stroke="oklch(var(--chart-2))"
+                        fill="oklch(var(--chart-2))"
                         fillOpacity={0.2}
                       />
                     </AreaChart>
@@ -295,7 +295,7 @@ export default function Dashboard({ profile }: DashboardProps) {
                       <XAxis dataKey="month" />
                       <YAxis />
                       <ChartTooltip content={<ChartTooltipContent />} />
-                      <Bar dataKey="amount" fill="hsl(var(--chart-3))" />
+                      <Bar dataKey="amount" fill="oklch(var(--chart-3))" />
                     </BarChart>
                   </ChartContainer>
                 </CardContent>
@@ -357,7 +357,7 @@ export default function Dashboard({ profile }: DashboardProps) {
                           dataKey="value"
                         >
                           {demoData.spendingCategories.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={`hsl(var(--chart-${index + 1}))`} />
+                            <Cell key={`cell-${index}`} fill={`oklch(var(--chart-${index + 1}))`} />
                           ))}
                         </Pie>
                         <ChartTooltip content={<ChartTooltipContent />} />
@@ -370,7 +370,7 @@ export default function Dashboard({ profile }: DashboardProps) {
                         <div className="flex items-center space-x-3">
                           <div 
                             className="w-4 h-4 rounded-full" 
-                            style={{ backgroundColor: `hsl(var(--chart-${index + 1}))` }}
+                            style={{ backgroundColor: `oklch(var(--chart-${index + 1}))` }}
                           />
                           <span className="font-medium">{category.name}</span>
                         </div>

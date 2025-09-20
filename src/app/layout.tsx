@@ -28,6 +28,7 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body
         className={`${manrope.variable} ${spaceMono.variable} antialiased`}
+        suppressHydrationWarning={true}
       >
         <WalletContextProvider>
           {children}

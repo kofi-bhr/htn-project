@@ -4,13 +4,13 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Profile } from '@/lib/supabaseClient';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, PolarAngleAxis, PolarGrid, Radar, RadarChart } from 'recharts';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
@@ -325,9 +325,27 @@ export default function DashboardPage() {
                     <label className="block text-sm font-medium text-muted-foreground mb-2 font-mono">
                       NFT Address
                     </label>
-                    <p className="text-foreground font-mono text-sm break-all">
+                    <p className="text-foreground font-mono text-sm break-all mb-2">
                       {profile.nft_mint_address}
                     </p>
+                    <div className="flex space-x-2">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => window.open(`https://devnet.solscan.io/token/${profile.nft_mint_address}`, '_blank')}
+                        className="font-mono text-xs"
+                      >
+                        View on Solscan
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => navigator.clipboard.writeText(profile.nft_mint_address)}
+                        className="font-mono text-xs"
+                      >
+                        Copy Address
+                      </Button>
+                    </div>
                   </div>
                   <div className="bg-muted rounded-lg p-4">
                     <label className="block text-sm font-medium text-muted-foreground mb-2 font-mono">
@@ -344,104 +362,267 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
 
-              {/* Recent Activity */}
+              {/* Profile Strength Radar Chart */}
               <Card>
-                <CardHeader>
-                  <CardTitle className="font-mono">Recent Activity</CardTitle>
+                <CardHeader className="items-center pb-4">
+                  <CardTitle className="font-mono">Profile Strength</CardTitle>
+                  <CardDescription className="font-mono">
+                    EFIS component breakdown
+                  </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium font-mono">Microloan Repayment</p>
-                        <p className="text-sm text-muted-foreground font-mono">$500 • 2 days ago</p>
-                      </div>
-                      <Badge variant="secondary" className="bg-green-100 text-green-800 font-mono">
-                        ✓ Paid
-                      </Badge>
-                    </div>
-                    <Separator />
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium font-mono">Family Remittance</p>
-                        <p className="text-sm text-muted-foreground font-mono">$200 • 5 days ago</p>
-                      </div>
-                      <Badge variant="secondary" className="bg-blue-100 text-blue-800 font-mono">
-                        Received
-                      </Badge>
-                    </div>
-                    <Separator />
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium font-mono">EFIS Score Update</p>
-                        <p className="text-sm text-muted-foreground font-mono">+12 points • 1 week ago</p>
-                      </div>
-                      <Badge variant="secondary" className="bg-purple-100 text-purple-800 font-mono">
-                        Improved
-                      </Badge>
-                    </div>
-                  </div>
+                <CardContent className="pb-0">
+                  <ChartContainer
+                    config={{
+                      humanCapital: {
+                        label: "Human Capital",
+                        color: "var(--chart-1)",
+                      },
+                      socialCapital: {
+                        label: "Social Capital", 
+                        color: "var(--chart-2)",
+                      },
+                      reputation: {
+                        label: "Reputation",
+                        color: "var(--chart-3)",
+                      },
+                      behavioral: {
+                        label: "Behavioral",
+                        color: "var(--chart-4)",
+                      },
+                    }}
+                    className="mx-auto aspect-square max-h-[250px]"
+                  >
+                    <RadarChart data={[
+                      { component: "Human Capital", humanCapital: efisData.components.humanCapital, socialCapital: 0, reputation: 0, behavioral: 0 },
+                      { component: "Social Capital", humanCapital: 0, socialCapital: efisData.components.socialCapital, reputation: 0, behavioral: 0 },
+                      { component: "Reputation", humanCapital: 0, socialCapital: 0, reputation: efisData.components.reputation, behavioral: 0 },
+                      { component: "Behavioral", humanCapital: 0, socialCapital: 0, reputation: 0, behavioral: efisData.components.behavioral },
+                    ]}>
+                      <ChartTooltip
+                        cursor={false}
+                        content={<ChartTooltipContent indicator="line" />}
+                      />
+                      <PolarAngleAxis dataKey="component" />
+                      <PolarGrid radialLines={false} />
+                      <Radar
+                        dataKey="humanCapital"
+                        fill="var(--color-humanCapital)"
+                        fillOpacity={0.1}
+                        stroke="var(--color-humanCapital)"
+                        strokeWidth={2}
+                      />
+                      <Radar
+                        dataKey="socialCapital"
+                        fill="var(--color-socialCapital)"
+                        fillOpacity={0.1}
+                        stroke="var(--color-socialCapital)"
+                        strokeWidth={2}
+                      />
+                      <Radar
+                        dataKey="reputation"
+                        fill="var(--color-reputation)"
+                        fillOpacity={0.1}
+                        stroke="var(--color-reputation)"
+                        strokeWidth={2}
+                      />
+                      <Radar
+                        dataKey="behavioral"
+                        fill="var(--color-behavioral)"
+                        fillOpacity={0.1}
+                        stroke="var(--color-behavioral)"
+                        strokeWidth={2}
+                      />
+                    </RadarChart>
+                  </ChartContainer>
                 </CardContent>
+                <CardFooter className="flex-col gap-2 text-sm">
+                  <div className="flex items-center gap-2 leading-none font-medium font-mono">
+                    Overall EFIS Score: {efisData.efisScore}
+                  </div>
+                  <div className="text-muted-foreground flex items-center gap-2 leading-none font-mono">
+                    {getScoreLabel(efisData.efisScore)} Creditworthiness
+                  </div>
+                </CardFooter>
               </Card>
             </div>
+
+            {/* Recent Activity */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-mono">Recent Activity</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium font-mono">Microloan Repayment</p>
+                      <p className="text-sm text-muted-foreground font-mono">$500 • 2 days ago</p>
+                    </div>
+                    <Badge variant="secondary" className="bg-green-100 text-green-800 font-mono">
+                      ✓ Paid
+                    </Badge>
+                  </div>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium font-mono">Family Remittance</p>
+                      <p className="text-sm text-muted-foreground font-mono">$200 • 5 days ago</p>
+                    </div>
+                    <Badge variant="secondary" className="bg-blue-100 text-blue-800 font-mono">
+                      Received
+                    </Badge>
+                  </div>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium font-mono">EFIS Score Update</p>
+                      <p className="text-sm text-muted-foreground font-mono">+12 points • 1 week ago</p>
+                    </div>
+                    <Badge variant="secondary" className="bg-purple-100 text-purple-800 font-mono">
+                      Improved
+                    </Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="income" className="space-y-6">
             <div className="grid md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="font-mono">Income vs Expenses</CardTitle>
+              {/* Financial Activity Over Time */}
+              <Card className="pt-0">
+                <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+                  <div className="grid flex-1 gap-1">
+                    <CardTitle className="font-mono">Financial Activity</CardTitle>
+                    <CardDescription className="font-mono">
+                      Income and expenses over the last 6 months
+                    </CardDescription>
+                  </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
                   <ChartContainer
                     config={{
-                      income: { label: "Income" },
-                      expenses: { label: "Expenses" },
+                      income: { label: "Income", color: "var(--chart-1)" },
+                      expenses: { label: "Expenses", color: "var(--chart-2)" },
                     }}
-                    className="h-[300px]"
+                    className="aspect-auto h-[250px] w-full"
                   >
                     <AreaChart data={demoData.incomeHistory}>
-                      <XAxis dataKey="month" />
-                      <YAxis />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Area
-                        type="monotone"
-                        dataKey="income"
-                        stroke="hsl(var(--chart-1))"
-                        fill="hsl(var(--chart-1))"
-                        fillOpacity={0.2}
+                      <defs>
+                        <linearGradient id="fillIncome" x1="0" y1="0" x2="0" y2="1">
+                          <stop
+                            offset="5%"
+                            stopColor="var(--color-income)"
+                            stopOpacity={0.8}
+                          />
+                          <stop
+                            offset="95%"
+                            stopColor="var(--color-income)"
+                            stopOpacity={0.1}
+                          />
+                        </linearGradient>
+                        <linearGradient id="fillExpenses" x1="0" y1="0" x2="0" y2="1">
+                          <stop
+                            offset="5%"
+                            stopColor="var(--color-expenses)"
+                            stopOpacity={0.8}
+                          />
+                          <stop
+                            offset="95%"
+                            stopColor="var(--color-expenses)"
+                            stopOpacity={0.1}
+                          />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid vertical={false} />
+                      <XAxis
+                        dataKey="month"
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={8}
+                        minTickGap={32}
+                      />
+                      <ChartTooltip
+                        cursor={false}
+                        content={
+                          <ChartTooltipContent
+                            indicator="dot"
+                          />
+                        }
                       />
                       <Area
-                        type="monotone"
                         dataKey="expenses"
-                        stroke="hsl(var(--chart-2))"
-                        fill="hsl(var(--chart-2))"
-                        fillOpacity={0.2}
+                        type="natural"
+                        fill="url(#fillExpenses)"
+                        stroke="var(--color-expenses)"
+                        stackId="a"
+                      />
+                      <Area
+                        dataKey="income"
+                        type="natural"
+                        fill="url(#fillIncome)"
+                        stroke="var(--color-income)"
+                        stackId="a"
                       />
                     </AreaChart>
                   </ChartContainer>
                 </CardContent>
               </Card>
 
+              {/* Spending Categories */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="font-mono">Remittances</CardTitle>
+                  <CardTitle className="font-mono">Spending Categories</CardTitle>
+                  <CardDescription className="font-mono">Monthly spending breakdown</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ChartContainer
                     config={{
                       amount: { label: "Amount" },
+                      food: { label: "Food", color: "var(--chart-1)" },
+                      transport: { label: "Transport", color: "var(--chart-2)" },
+                      healthcare: { label: "Healthcare", color: "var(--chart-3)" },
+                      education: { label: "Education", color: "var(--chart-4)" },
+                      other: { label: "Other", color: "var(--chart-5)" },
                     }}
-                    className="h-[300px]"
                   >
-                    <BarChart data={demoData.remittances}>
-                      <XAxis dataKey="month" />
-                      <YAxis />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Bar dataKey="amount" fill="hsl(var(--chart-3))" />
+                    <BarChart
+                      accessibilityLayer
+                      data={demoData.spendingCategories}
+                      layout="vertical"
+                      margin={{
+                        left: 0,
+                      }}
+                    >
+                      <YAxis
+                        dataKey="name"
+                        type="category"
+                        tickLine={false}
+                        tickMargin={10}
+                        axisLine={false}
+                      />
+                      <XAxis dataKey="amount" type="number" hide />
+                      <ChartTooltip
+                        cursor={false}
+                        content={<ChartTooltipContent hideLabel />}
+                      />
+                      <Bar 
+                        dataKey="amount" 
+                        layout="vertical" 
+                        radius={5}
+                        fill="var(--chart-1)"
+                      />
                     </BarChart>
                   </ChartContainer>
                 </CardContent>
+                <CardFooter className="flex-col items-start gap-2 text-sm">
+                  <div className="flex gap-2 leading-none font-medium font-mono">
+                    Total monthly spending: $1,000
+                  </div>
+                  <div className="text-muted-foreground leading-none font-mono">
+                    Based on last 6 months average
+                  </div>
+                </CardFooter>
               </Card>
             </div>
           </TabsContent>
@@ -500,7 +681,7 @@ export default function DashboardPage() {
                           dataKey="value"
                         >
                           {demoData.spendingCategories.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={`hsl(var(--chart-${index + 1}))`} />
+                            <Cell key={`cell-${index}`} fill={`var(--chart-${index + 1})`} />
                           ))}
                         </Pie>
                         <ChartTooltip content={<ChartTooltipContent />} />
@@ -513,7 +694,7 @@ export default function DashboardPage() {
                         <div className="flex items-center space-x-3">
                           <div 
                             className="w-4 h-4 rounded-full" 
-                            style={{ backgroundColor: `hsl(var(--chart-${index + 1}))` }}
+                            style={{ backgroundColor: `var(--chart-${index + 1})` }}
                           />
                           <span className="font-medium font-mono">{category.name}</span>
                         </div>
