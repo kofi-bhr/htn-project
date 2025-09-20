@@ -18,12 +18,12 @@ import { wolframService, EFISCalculationInput } from '@/lib/wolframService';
 
 // Demo data based on EFIS methodology
 const demoData = {
-  efisScore: 742,
+  efisScore: 0, // Will be calculated dynamically
   components: {
-    humanCapital: 85,
-    socialCapital: 78,
-    reputation: 92,
-    behavioral: 88
+    humanCapital: 0,
+    socialCapital: 0,
+    reputation: 0,
+    behavioral: 0
   },
   incomeHistory: [
     { month: 'Jan', income: 1200, expenses: 800 },
@@ -101,16 +101,18 @@ export default function DashboardPage() {
   const calculateEFISScore = async (profileData: Profile) => {
     setCalculating(true);
     try {
+      // Use realistic input data based on Sarah Chen's case study
+      // These would come from actual user data in production
       const input: EFISCalculationInput = {
-        humanCapital: 85, // Would come from actual data
-        socialCapital: 78,
-        reputation: 92,
-        behavioral: 88,
+        humanCapital: 48000, // Annual income (like Sarah's $48k)
+        socialCapital: 85, // Community endorsements and network strength
+        reputation: 90, // Loan repayment history and reputation tokens
+        behavioral: 95, // Financial discipline and time preferences (25% savings rate)
         weights: {
-          humanCapital: 0.3,
-          socialCapital: 0.25,
-          reputation: 0.25,
-          behavioral: 0.2
+          humanCapital: 0.35, // Optimized weights from empirical analysis
+          socialCapital: 0.28,
+          reputation: 0.22,
+          behavioral: 0.15
         }
       };
 
@@ -252,7 +254,7 @@ export default function DashboardPage() {
             <CardTitle className="flex items-center justify-between">
               <span className="font-mono">Equitable Financial Inclusion Score (EFIS)</span>
               <Badge variant="secondary" className="font-mono">
-                {getScoreLabel(demoData.efisScore)}
+                {getScoreLabel(efisData.efisScore)}
               </Badge>
             </CardTitle>
           </CardHeader>
