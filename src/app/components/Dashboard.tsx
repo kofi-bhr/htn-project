@@ -35,10 +35,10 @@ export default function Dashboard({ profile }: DashboardProps) {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-foreground mb-4">
-            Welcome to Your Identity Dashboard
+            Welcome to Your Dashboard
           </h2>
           <p className="text-xl text-muted-foreground">
-            Your digital identity has been successfully forged on the Solana blockchain
+            Your digital identity has been successfully created
           </p>
         </div>
 
@@ -53,8 +53,11 @@ export default function Dashboard({ profile }: DashboardProps) {
               </div>
             </div>
             <CardTitle className="text-2xl">Your Digital Identity</CardTitle>
+            <CardDescription>
+              Your unique identity NFT on the Solana blockchain
+            </CardDescription>
           </CardHeader>
-          
+
           <CardContent className="space-y-4">
             <div className="bg-muted rounded-lg p-4">
               <label className="block text-sm font-medium text-muted-foreground mb-2">
@@ -64,16 +67,16 @@ export default function Dashboard({ profile }: DashboardProps) {
                 {profile.wallet_address}
               </p>
             </div>
-            
+
             <div className="bg-muted rounded-lg p-4">
               <label className="block text-sm font-medium text-muted-foreground mb-2">
-                NFT Mint Address
+                NFT Address
               </label>
               <p className="text-foreground font-mono text-sm break-all">
                 {profile.nft_mint_address}
               </p>
             </div>
-            
+
             <div className="bg-muted rounded-lg p-4">
               <label className="block text-sm font-medium text-muted-foreground mb-2">
                 Created On
@@ -94,11 +97,18 @@ export default function Dashboard({ profile }: DashboardProps) {
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button size="lg" className="w-full sm:w-auto">
-            View NFT on Solscan
+            View NFT Details
           </Button>
           <Button variant="outline" size="lg" className="w-full sm:w-auto">
             Share Identity
           </Button>
+        </div>
+
+        {/* Status Badge */}
+        <div className="text-center mt-8">
+          <Badge variant="secondary" className="text-lg px-4 py-2">
+            ✓ Identity Verified
+          </Badge>
         </div>
       </main>
     </div>

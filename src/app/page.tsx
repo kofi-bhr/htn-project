@@ -93,9 +93,6 @@ export default function Home() {
       console.log('Profile saved successfully:', data);
       setProfile(data);
       setShowOnboarding(false);
-      
-      // Show success message
-      alert('Identity forged successfully! Your digital identity has been created.');
 
     } catch (error) {
       console.error('Error forging identity:', error);
