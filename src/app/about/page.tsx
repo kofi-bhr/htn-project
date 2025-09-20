@@ -9,6 +9,7 @@ import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import 'katex/dist/katex.min.css';
 import { InlineMath, BlockMath } from 'react-katex';
 
+
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-background">
