@@ -1,26 +1,37 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #f0eee6;
   --foreground: #171717;
+  --primary: #d97757;
+}
+
+@font-face {
+  font-family: 'Sunset-Serial';
+  src: url('/fonts/Sunset-Serial Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-libre-baskerville: var(--font-libre-baskerville);
+  --font-sunset-serial: 'Sunset-Serial', serif;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #f0eee6;
+    --foreground: #171717;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-libre-baskerville), serif;
 }
