@@ -65,14 +65,28 @@ export default function FaceAuth({ mode, onEmbedding, onDebug }: FaceAuthProps) 
     (async () => {
       try {
         await getHuman();
-      } catch {}
+        log("Human.js preloaded successfully");
+      } catch (error) {
+        log("Human.js preload failed:", error);
+        setStatus("Face detection library failed to load. Please refresh the page.");
+      }
     })();
   }, []);
 
   const detectLoop = useCallback(async () => {
     setRunning(true);
     runningRef.current = true;
-    const human = await getHuman();
+    
+    let human;
+    try {
+      human = await getHuman();
+    } catch (error) {
+      log("Failed to initialize Human.js:", error);
+      setStatus("Face detection failed to initialize. Please refresh the page.");
+      setRunning(false);
+      runningRef.current = false;
+      return;
+    }
     const video = videoRef.current!;
     const canvas = canvasRef.current!;
     const ctx = canvas.getContext("2d");

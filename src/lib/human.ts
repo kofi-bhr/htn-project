@@ -7,7 +7,7 @@ let humanInstance: any = null;
 // Models are loaded from the official CDN for quick demo use
 const humanConfig: any = {
   modelBasePath: "https://vladmandic.github.io/human/models",
-  backend: "", // let Human pick the best available backend (webgl/wasm/cpu)
+  backend: "webgl", // Force WebGL backend to avoid Node.js dependencies
   filter: { enabled: true },
   face: {
     enabled: true,
@@ -24,17 +24,23 @@ const humanConfig: any = {
 export async function getHuman(): Promise<any> {
   if (humanInstance) return humanInstance;
   if (typeof window === 'undefined') throw new Error('Human can only run in the browser');
-  // Always dynamically import ESM/browser build
-  const HumanModule = await import("@vladmandic/human");
-  const Human = HumanModule.default;
-  const human = new Human(humanConfig);
-  console.log('[Human] init config', humanConfig);
-  await human.load();
-  console.log('[Human] models loaded');
-  await human.warmup();
-  console.log('[Human] warmup complete');
-  humanInstance = human;
-  return humanInstance;
+  
+  try {
+    // Always dynamically import ESM/browser build
+    const HumanModule = await import("@vladmandic/human");
+    const Human = HumanModule.default;
+    const human = new Human(humanConfig);
+    console.log('[Human] init config', humanConfig);
+    await human.load();
+    console.log('[Human] models loaded');
+    await human.warmup();
+    console.log('[Human] warmup complete');
+    humanInstance = human;
+    return humanInstance;
+  } catch (error) {
+    console.error('[Human] initialization failed:', error);
+    throw new Error('Failed to initialize Human.js library');
+  }
 }
 
 export type FaceDetectionResult = any;
