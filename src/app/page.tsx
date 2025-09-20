@@ -1,89 +1,175 @@
 "use client";
 
-import Lottie from 'lottie-react';
-import { useEffect, useState } from 'react';
+import { useWallet, useConnection } from '@solana/wallet-adapter-react';
+import { useState, useEffect } from 'react';
+import { Metaplex, keypairIdentity } from '@metaplex-foundation/js';
+import { Keypair } from '@solana/web3.js';
+import { supabase, Profile } from '@/lib/supabaseClient';
+import Dashboard from './components/Dashboard';
+import LandingPage from './components/LandingPage';
 
 export default function Home() {
-  const [animationData, setAnimationData] = useState(null);
+  const { publicKey, signTransaction } = useWallet();
+  const { connection } = useConnection();
+  const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [isForging, setIsForging] = useState(false);
 
+  // Check if user profile exists when wallet connects
   useEffect(() => {
-    fetch('/assets/homepage.json')
-      .then(response => response.json())
-      .then(data => setAnimationData(data))
-      .catch(error => console.error('Error loading animation:', error));
-  }, []);
+    const checkProfile = async () => {
+      if (!publicKey) {
+        setProfile(null);
+        setLoading(false);
+        return;
+      }
 
-  return (
-    <div className="min-h-screen bg-[#f0eee6] text-[#171717]">
-      {/* Main Content Area */}
-      <div className="px-8 py-20 sm:px-20">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-16 items-center min-h-[80vh]">
-            
-            {/* Left Section - Text */}
-            <div className="space-y-8">
-              <h1 
-                className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight"
-                style={{ fontFamily: 'Sunset-Serial, serif' }}
-              >
-                <span className="underline decoration-2 underline-offset-4">Creative</span> solutions and{" "}
-                <span className="underline decoration-2 underline-offset-4">innovative</span> products that put design at the forefront
-              </h1>
-              
-              <p 
-                className="text-base sm:text-lg text-gray-700 leading-relaxed max-w-2xl"
-                style={{ fontFamily: 'var(--font-libre-baskerville), serif' }}
-              >
-                Design will have a vast impact on the world. We are dedicated to creating beautiful experiences and meaningful connections through thoughtful design.
-              </p>
-            </div>
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('wallet_address', publicKey.toString())
+          .single();
 
-            {/* Right Section - Lottie Animation */}
-            <div className="flex justify-center lg:justify-end">
-              <div className="w-80 h-80 lg:w-96 lg:h-96">
-                {animationData ? (
-                  <Lottie 
-                    animationData={animationData}
-                    loop={true}
-                    autoplay={true}
-                    style={{ width: '100%', height: '100%' }}
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
-                    <p className="text-gray-500">Loading animation...</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error checking profile:', error);
+        } else if (data) {
+          setProfile(data);
+        } else {
+          setProfile(null);
+        }
+      } catch (error) {
+        console.error('Error checking profile:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkProfile();
+  }, [publicKey]);
+
+  const forgeIdentity = async () => {
+    if (!publicKey || !signTransaction) {
+      alert('Please connect your wallet first');
+      return;
+    }
+
+    setIsForging(true);
+
+    try {
+      // Initialize Metaplex
+      const metaplex = Metaplex.make(connection)
+        .use(keypairIdentity(Keypair.generate()));
+
+      // Create metadata for the NFT
+      const metadata = {
+        name: `Project Umoja Identity #${Date.now()}`,
+        symbol: 'UMOJA',
+        description: `A unique digital identity NFT for ${publicKey.toString()} on Project Umoja`,
+        image: 'https://via.placeholder.com/400x400/8B5CF6/FFFFFF?text=U',
+        attributes: [
+          {
+            trait_type: 'Identity Type',
+            value: 'Digital Identity'
+          },
+          {
+            trait_type: 'Blockchain',
+            value: 'Solana'
+          },
+          {
+            trait_type: 'Project',
+            value: 'Umoja'
+          },
+          {
+            trait_type: 'Wallet Address',
+            value: publicKey.toString()
+          }
+        ],
+        properties: {
+          files: [
+            {
+              uri: 'https://via.placeholder.com/400x400/8B5CF6/FFFFFF?text=U',
+              type: 'image/png'
+            }
+          ],
+          category: 'image'
+        }
+      };
+
+      // Upload metadata
+      console.log('Uploading metadata...');
+      const { uri } = await metaplex.nfts().uploadMetadata(metadata);
+      console.log('Metadata uploaded:', uri);
+
+      // Create NFT
+      console.log('Creating NFT...');
+      const { nft } = await metaplex.nfts().create({
+        uri: uri,
+        name: metadata.name,
+        symbol: metadata.symbol,
+        sellerFeeBasisPoints: 0,
+        updateAuthority: metaplex.identity(),
+        mintAuthority: metaplex.identity(),
+        tokenOwner: publicKey,
+        isMutable: true,
+        creators: [
+          {
+            address: publicKey,
+            share: 100,
+          },
+        ],
+      });
+
+      console.log('NFT created:', nft.address.toString());
+
+      // Save profile to Supabase
+      const { data, error } = await supabase
+        .from('profiles')
+        .insert({
+          wallet_address: publicKey.toString(),
+          nft_mint_address: nft.address.toString(),
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error saving profile:', error);
+        alert('Failed to save profile to database');
+        return;
+      }
+
+      console.log('Profile saved:', data);
+      setProfile(data);
+
+    } catch (error) {
+      console.error('Error forging identity:', error);
+      alert('Failed to forge identity. Please try again.');
+    } finally {
+      setIsForging(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white text-lg">Loading...</p>
         </div>
       </div>
+    );
+  }
 
-      {/* Bottom Section */}
-      <div className="px-8 py-12 sm:px-20 bg-gray-100/50">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center">
-            <h2 
-              className="text-2xl sm:text-3xl font-bold mb-8"
-              style={{ fontFamily: 'Sunset-Serial, serif' }}
-            >
-              Ready to create something extraordinary?
-            </h2>
-            <p 
-              className="text-base text-gray-700 mb-8 max-w-2xl mx-auto"
-              style={{ fontFamily: 'var(--font-libre-baskerville), serif' }}
-            >
-              Join us in building the future of design, one thoughtful interaction at a time.
-            </p>
-            <button 
-              className="bg-[#d97757] text-white px-6 py-3 rounded-lg text-base font-medium hover:bg-[#c66a4a] transition-colors"
-              style={{ fontFamily: 'var(--font-libre-baskerville), serif' }}
-            >
-              Get Started
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  // If wallet is connected and profile exists, show dashboard
+  if (publicKey && profile) {
+    return <Dashboard profile={profile} />;
+  }
+
+  // If wallet is connected but no profile exists, show landing page
+  if (publicKey && !profile) {
+    return <LandingPage onForgeIdentity={forgeIdentity} isForging={isForging} />;
+  }
+
+  // If no wallet connected, show landing page with connect wallet prompt
+  return <LandingPage onForgeIdentity={forgeIdentity} isForging={isForging} />;
 }
