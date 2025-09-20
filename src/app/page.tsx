@@ -170,9 +170,9 @@ export default function Home() {
           <div className="text-center">
           <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-foreground text-lg">Loading...</p>
+          </div>
       </div>
-    </div>
-  );
+    );
   }
 
   // Show onboarding flow if user clicked to start

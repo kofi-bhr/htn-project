@@ -1,6 +1,62 @@
 # project umoja - identity core
 
-a next.js 14 application that lets users forge their digital identity on the solana blockchain using nfts and supabase for data persistence. 0% vibecoded.
+A next.js 14 application that lets users forge their digital identity on the solana blockchain using nfts and supabase for data persistence. 0% vibecoded.
+
+## Face Auth with @vladmandic/human (Hackathon-ready)
+
+Browser-first face authentication using `@vladmandic/human` for embeddings and liveness. Only embeddings are sent to the backend. On first login, register your face; later logins verify against stored embedding.
+
+### Install
+
+```bash
+npm i @vladmandic/human @vladmandic/face-api
+# Tailwind is already configured, but if needed:
+npm i -D tailwindcss @tailwindcss/postcss
+```
+
+### How it works
+
+- Client loads Human models from CDN and uses webcam to detect face + embedding
+- Liveness check: blink or head turn (Human gesture)
+- Registration: POST embedding to `/api/face/register` (stores in `.data/embeddings.json`)
+- Login: POST embedding to `/api/face/verify` (cosine similarity threshold)
+- Demo session is client-side via `localStorage` only
+
+### Key files
+
+- `src/lib/human.ts`: Human singleton + config + utility
+- `src/components/FaceAuth.tsx`: Webcam UI, detection loop, liveness, embedding callback
+- `src/app/register/page.tsx`: Registration page
+- `src/app/login/page.tsx`: Login page
+- `src/app/api/face/register/route.ts`: Save embedding (JSON file)
+- `src/app/api/face/verify/route.ts`: Verify embedding similarity
+- `src/app/dashboard/page.tsx`: Simple gated page
+
+### Model loading
+
+Human is configured to load models from the official CDN:
+
+```ts
+// src/lib/human.ts
+modelBasePath: "https://vladmandic.github.io/human/models"
+```
+
+No action required for local model hosting for the demo.
+
+### Running
+
+```bash
+npm run dev
+```
+
+Open http://localhost:3000 and use the buttons to Register/Login. Grant webcam access when prompted.
+
+### Notes
+
+- This is a demo. For production, encrypt embeddings at rest, add user accounts, CSRF protection, sessions, and rate limits. Tweak the similarity threshold based on your environment.
+- `.data` is gitignored and stores a single demo user embedding.
+
+## Getting Started
 
 ## features
 

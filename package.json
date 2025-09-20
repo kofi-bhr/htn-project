@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "dev": "next dev",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint"
   },
@@ -17,6 +17,9 @@
     "@solana/wallet-adapter-wallets": "^0.19.37",
     "@solana/web3.js": "^1.98.4",
     "@supabase/supabase-js": "^2.57.4",
+    "@tensorflow/tfjs": "^4.22.0",
+    "@vladmandic/face-api": "^1.7.15",
+    "@vladmandic/human": "^3.3.6",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lottie-react": "^2.4.1",
