@@ -1,14 +1,3 @@
-"use client";
-
-import { useWallet, useConnection } from '@solana/wallet-adapter-react';
-import { useState, useEffect } from 'react';
-import { Metaplex, keypairIdentity } from '@metaplex-foundation/js';
-import { Keypair } from '@solana/web3.js';
-import { supabase, Profile } from '@/lib/supabaseClient';
-import Dashboard from './components/Dashboard';
-import LandingPage from './components/LandingPage';
-import OnboardingFlow, { OnboardingData } from './components/OnboardingFlow';
-
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
@@ -18,8 +7,37 @@ export default function Home() {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center shadow-lg">
-                <span className="text-xs font-medium text-gray-300">Logo</span>
+              <div className="w-10 h-10 flex items-center justify-center">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  {/* Circuit board style circular frame */}
+                  <circle cx="20" cy="20" r="18" stroke="#60A5FA" strokeWidth="1.5" fill="none"/>
+                  <circle cx="20" cy="20" r="14" stroke="#60A5FA" strokeWidth="1" fill="none"/>
+                  
+                  {/* Letter U */}
+                  <text x="20" y="26" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#60A5FA" fontFamily="Arial, sans-serif">U</text>
+                  
+                  {/* Left connecting lines and dots */}
+                  <line x1="2" y1="20" x2="8" y2="20" stroke="#60A5FA" strokeWidth="1"/>
+                  <line x1="2" y1="16" x2="8" y2="16" stroke="#60A5FA" strokeWidth="1"/>
+                  <line x1="2" y1="24" x2="8" y2="24" stroke="#60A5FA" strokeWidth="1"/>
+                  <circle cx="2" cy="20" r="1.5" fill="#60A5FA"/>
+                  <circle cx="2" cy="16" r="1.5" fill="#60A5FA"/>
+                  <circle cx="2" cy="24" r="1.5" fill="#60A5FA"/>
+                  
+                  {/* Right connecting lines and dots */}
+                  <line x1="32" y1="20" x2="38" y2="20" stroke="#60A5FA" strokeWidth="1"/>
+                  <line x1="32" y1="16" x2="38" y2="16" stroke="#60A5FA" strokeWidth="1"/>
+                  <line x1="32" y1="24" x2="38" y2="24" stroke="#60A5FA" strokeWidth="1"/>
+                  <circle cx="38" cy="20" r="1.5" fill="#60A5FA"/>
+                  <circle cx="38" cy="16" r="1.5" fill="#60A5FA"/>
+                  <circle cx="38" cy="24" r="1.5" fill="#60A5FA"/>
+                  
+                  {/* Top and bottom curved lines */}
+                  <path d="M 20 2 Q 20 8 20 8" stroke="#60A5FA" strokeWidth="1" fill="none"/>
+                  <path d="M 20 32 Q 20 38 20 38" stroke="#60A5FA" strokeWidth="1" fill="none"/>
+                  <circle cx="20" cy="2" r="1.5" fill="#60A5FA"/>
+                  <circle cx="20" cy="38" r="1.5" fill="#60A5FA"/>
+                </svg>
               </div>
               <span className="text-xl font-bold text-white">Project Umoja</span>
             </div>
@@ -206,23 +224,4 @@ export default function Home() {
       </footer>
     </div>
   );
-  }
-
-  // Show onboarding flow if user clicked to start
-  if (showOnboarding) {
-    return <OnboardingFlow onComplete={forgeIdentity} isProcessing={isForging} />;
-  }
-
-  // If wallet is connected and profile exists, show dashboard
-  if (publicKey && profile) {
-    return <Dashboard profile={profile} />;
-  }
-
-  // If wallet is connected but no profile exists, show landing page
-  if (publicKey && !profile) {
-    return <LandingPage onStartOnboarding={startOnboarding} isForging={isForging} />;
-  }
-
-  // If no wallet connected, show clean landing page with 2-step CTA
-  return <LandingPage onStartOnboarding={startOnboarding} isForging={isForging} />;
 }
