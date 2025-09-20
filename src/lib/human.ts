@@ -5,62 +5,36 @@ let humanInstance: any = null;
 
 // Minimal config optimized for face detection + embeddings + basic gestures
 // Models are loaded from the official CDN for quick demo use
-const humanConfig = {
+const humanConfig: any = {
   modelBasePath: "https://vladmandic.github.io/human/models",
-  backend: "webgl",
+  backend: "", // let Human pick the best available backend (webgl/wasm/cpu)
   filter: { enabled: true },
   face: {
     enabled: true,
-    detector: { rotation: true },
+    detector: { rotation: true, maxDetected: 1, skipFrames: 1, skipTime: 100, minConfidence: 0.2 },
     mesh: { enabled: true },
     iris: { enabled: true },
-    attention: { enabled: true },
-    description: { enabled: true }, // enables face embeddings
+    attention: { enabled: false },
+    description: { enabled: true, skipFrames: 1, skipTime: 100, minConfidence: 0.1 }, // enables face embeddings
+    liveness: { enabled: true, skipFrames: 1, skipTime: 200 },
   },
   gesture: { enabled: true },
 };
 
 export async function getHuman(): Promise<any> {
   if (humanInstance) return humanInstance;
-  
-  // Dynamic import to avoid server-side issues
-  if (typeof window === 'undefined') {
-    throw new Error('Human library can only be used in the browser');
-  }
-  
-  // Check if we're in development mode
-  const isDev = process.env.NODE_ENV === 'development';
-  
-  if (!isDev) {
-    // In production, return a mock implementation
-    return {
-      detect: async () => ({ face: [] }),
-      draw: () => {},
-      load: async () => {},
-      warmup: async () => {},
-    };
-  }
-  
-  // Use dynamic import with proper error handling
-  try {
-    // Try to import the human library
-    const HumanModule = await import("@vladmandic/human");
-    const Human = HumanModule.default;
-    const human = new Human(humanConfig);
-    await human.load();
-    await human.warmup();
-    humanInstance = human;
-    return humanInstance;
-  } catch (error) {
-    console.error('Failed to load Human library:', error);
-    // Return a mock implementation for development
-    return {
-      detect: async () => ({ face: [] }),
-      draw: () => {},
-      load: async () => {},
-      warmup: async () => {},
-    };
-  }
+  if (typeof window === 'undefined') throw new Error('Human can only run in the browser');
+  // Always dynamically import ESM/browser build
+  const HumanModule = await import("@vladmandic/human");
+  const Human = HumanModule.default;
+  const human = new Human(humanConfig);
+  console.log('[Human] init config', humanConfig);
+  await human.load();
+  console.log('[Human] models loaded');
+  await human.warmup();
+  console.log('[Human] warmup complete');
+  humanInstance = human;
+  return humanInstance;
 }
 
 export type FaceDetectionResult = any;

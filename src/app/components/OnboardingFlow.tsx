@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from 'react';
+import FaceAuth from '@/components/FaceAuth';
+import { supabase } from '@/lib/supabaseClient';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -27,6 +29,9 @@ export default function OnboardingFlow({ onComplete, isProcessing }: OnboardingF
     location: '',
     facialRecognitionComplete: false
   });
+  const [faceSaving, setFaceSaving] = useState(false);
+  const [faceDone, setFaceDone] = useState(false);
+  const [faceMessage, setFaceMessage] = useState<string>("");
 
   const steps = [
     {
@@ -62,6 +67,26 @@ export default function OnboardingFlow({ onComplete, isProcessing }: OnboardingF
   const handleSubmit = () => {
     onComplete(formData);
   };
+
+  async function handleFaceEmbedding(embedding: number[]) {
+    try {
+      setFaceSaving(true);
+      // Create a server-side face record (no localStorage)
+      const faceId = typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
+      const { error } = await supabase
+        .from('face_auth')
+        .insert({ face_id: faceId, embedding, created_at: new Date().toISOString() });
+      if (error) throw error;
+      // Persist reference to face_id in Supabase session storage if needed
+      await supabase.auth.setSession({ access_token: '', refresh_token: '' }).catch(() => {});
+      sessionStorage.setItem('face-id', faceId);
+      setFormData({ ...formData, facialRecognitionComplete: true });
+      setFaceDone(true);
+      setFaceMessage('scan complete. face authentication is set up for this device.');
+    } finally {
+      setFaceSaving(false);
+    }
+  }
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -162,36 +187,41 @@ export default function OnboardingFlow({ onComplete, isProcessing }: OnboardingF
 
       case 2:
         return (
-          <div className="text-center space-y-6">
-            <div className="w-32 h-32 bg-primary rounded-full flex items-center justify-center mx-auto">
-              <svg className="w-16 h-16 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-            </div>
+          <div className="space-y-6">
             <div>
-              <h2 className="text-2xl font-bold text-foreground mb-2">facial recognition</h2>
-              <p className="text-muted-foreground mb-4">
-                this step will be handled by sarthak - placeholder for now
-              </p>
-              <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-200 border-yellow-500/30">
-                🚧 facial recognition module coming soon - sarthak is working on it
-              </Badge>
+              <h2 className="text-xl font-semibold text-foreground mb-2">facial recognition</h2>
+              <p className="text-muted-foreground mb-4">blink or turn your head for liveness, then we\'ll capture your face embedding.
+              your image is not stored; only an embedding is saved.</p>
+              <FaceAuth mode="register" onEmbedding={handleFaceEmbedding}
+                onDebug={(d) => {
+                  // Optional: write debug to console
+                  // console.log('liveness', d);
+                }}
+              />
+              {faceDone && (
+                <div className="mt-3 text-sm text-green-400">{faceMessage}</div>
+              )}
             </div>
             <div className="flex justify-between">
-              <Button
-                onClick={handlePrevious}
-                variant="outline"
-              >
-                back
-              </Button>
-              <Button
-                onClick={() => {
-                  setFormData({...formData, facialRecognitionComplete: true});
-                  handleNext();
-                }}
-              >
-                skip for now
-              </Button>
+              <Button onClick={handlePrevious} variant="outline">back</Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setFormData({ ...formData, facialRecognitionComplete: true });
+                    handleNext();
+                  }}
+                  disabled={faceSaving}
+                >
+                  skip for now
+                </Button>
+                <Button
+                  onClick={() => handleNext()}
+                  disabled={!faceDone}
+                >
+                  next
+                </Button>
+              </div>
             </div>
           </div>
         );
@@ -230,20 +260,41 @@ export default function OnboardingFlow({ onComplete, isProcessing }: OnboardingF
               >
                 back
               </Button>
-              <Button
-                onClick={handleSubmit}
-                disabled={isProcessing}
-                className="w-48"
-              >
-                {isProcessing ? (
-                  <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>
-                    <span>forging identity...</span>
-                  </div>
-                ) : (
-                  'forge my identity'
-                )}
-              </Button>
+                <Button
+                  onClick={handleSubmit}
+                  disabled={isProcessing}
+                  className="w-48"
+                >
+                  {isProcessing ? (
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>
+                      <span>forging identity...</span>
+                    </div>
+                  ) : (
+                    'forge my identity'
+                  )}
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-48"
+                  onClick={async () => {
+                    // Temporary bypass: store onboarding data without a wallet
+                    const anonId = crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`;
+                    const { error } = await supabase
+                      .from('profiles')
+                      .insert({
+                        wallet_address: `anon:${anonId}`,
+                        nft_mint_address: 'pending',
+                      });
+                    if (!error) {
+                      alert('Saved basic profile without wallet (temporary). Continue demo.');
+                    } else {
+                      alert('Failed to save temporary profile');
+                    }
+                  }}
+                >
+                  skip wallet (temp)
+                </Button>
             </div>
           </div>
         );
