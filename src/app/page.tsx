@@ -35,9 +35,7 @@ export default function Home() {
           console.error('Error checking profile:', error);
         } else if (data) {
           setProfile(data);
-          // Redirect to dashboard if profile exists
-          router.push('/dashboard');
-          return;
+          // Don't auto-redirect - let user choose when to go to dashboard
         } else {
           setProfile(null);
         }
@@ -53,6 +51,10 @@ export default function Home() {
 
   const startOnboarding = () => {
     setShowOnboarding(true);
+  };
+
+  const goToDashboard = () => {
+    router.push('/dashboard');
   };
 
   const forgeIdentity = async (onboardingData: OnboardingData) => {
@@ -95,8 +97,7 @@ export default function Home() {
       setProfile(data);
       setShowOnboarding(false);
       
-      // Redirect to dashboard
-      router.push('/dashboard');
+      // Don't auto-redirect - let user choose when to go to dashboard
 
     } catch (error) {
       console.error('Error forging identity:', error);
@@ -130,5 +131,12 @@ export default function Home() {
   }
 
   // Always show landing page (dashboard redirect is handled in useEffect)
-  return <LandingPage onStartOnboarding={startOnboarding} isForging={isForging} />;
+  return (
+    <LandingPage 
+      onStartOnboarding={startOnboarding} 
+      isForging={isForging}
+      hasProfile={!!profile}
+      onGoToDashboard={goToDashboard}
+    />
+  );
 }

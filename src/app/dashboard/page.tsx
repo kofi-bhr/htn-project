@@ -14,6 +14,7 @@ import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, BarChart, Bar, PieC
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { wolframService, EFISCalculationInput } from '@/lib/wolframService';
 
 // Demo data based on EFIS methodology
 const demoData = {
@@ -59,6 +60,8 @@ export default function DashboardPage() {
   const { publicKey } = useWallet();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [efisData, setEfisData] = useState(demoData);
+  const [calculating, setCalculating] = useState(false);
 
   // Check if user profile exists when wallet connects
   useEffect(() => {
@@ -80,6 +83,8 @@ export default function DashboardPage() {
           console.error('Error checking profile:', error);
         } else if (data) {
           setProfile(data);
+          // Calculate EFIS score using Wolfram
+          await calculateEFISScore(data);
         } else {
           setProfile(null);
         }
@@ -92,6 +97,46 @@ export default function DashboardPage() {
 
     checkProfile();
   }, [publicKey]);
+
+  const calculateEFISScore = async (profileData: Profile) => {
+    setCalculating(true);
+    try {
+      const input: EFISCalculationInput = {
+        humanCapital: 85, // Would come from actual data
+        socialCapital: 78,
+        reputation: 92,
+        behavioral: 88,
+        weights: {
+          humanCapital: 0.3,
+          socialCapital: 0.25,
+          reputation: 0.25,
+          behavioral: 0.2
+        }
+      };
+
+      const result = await wolframService.calculateEFISScore(input);
+      
+      setEfisData({
+        efisScore: result.totalScore,
+        components: {
+          humanCapital: result.components.humanCapital,
+          socialCapital: result.components.socialCapital,
+          reputation: result.components.reputation,
+          behavioral: result.components.behavioral
+        },
+        incomeHistory: demoData.incomeHistory,
+        loanHistory: demoData.loanHistory,
+        remittances: demoData.remittances,
+        spendingCategories: demoData.spendingCategories
+      });
+
+      console.log('EFIS Score calculated:', result.breakdown);
+    } catch (error) {
+      console.error('Error calculating EFIS score:', error);
+    } finally {
+      setCalculating(false);
+    }
+  };
 
   const getScoreColor = (score: number) => {
     if (score >= 800) return 'text-green-600';
@@ -214,28 +259,33 @@ export default function DashboardPage() {
           <CardContent>
             <div className="flex items-center space-x-8">
               <div className="text-center">
-                <div className={`text-6xl font-bold font-mono ${getScoreColor(demoData.efisScore)}`}>
-                  {demoData.efisScore}
+                <div className={`text-6xl font-bold font-mono ${getScoreColor(efisData.efisScore)}`}>
+                  {calculating ? '...' : efisData.efisScore}
                 </div>
                 <p className="text-sm text-muted-foreground font-mono">out of 1000</p>
+                {calculating && (
+                  <p className="text-xs text-muted-foreground font-mono mt-2">
+                    Calculating with Wolfram...
+                  </p>
+                )}
               </div>
               <div className="flex-1">
-                <Progress value={demoData.efisScore / 10} className="h-3 mb-4" />
+                <Progress value={efisData.efisScore / 10} className="h-3 mb-4" />
                 <div className="grid grid-cols-4 gap-4 text-sm">
                   <div className="text-center">
-                    <div className="font-mono font-semibold">{demoData.components.humanCapital}</div>
+                    <div className="font-mono font-semibold">{efisData.components.humanCapital}</div>
                     <div className="text-muted-foreground font-mono">Human Capital</div>
                   </div>
                   <div className="text-center">
-                    <div className="font-mono font-semibold">{demoData.components.socialCapital}</div>
+                    <div className="font-mono font-semibold">{efisData.components.socialCapital}</div>
                     <div className="text-muted-foreground font-mono">Social Capital</div>
                   </div>
                   <div className="text-center">
-                    <div className="font-mono font-semibold">{demoData.components.reputation}</div>
+                    <div className="font-mono font-semibold">{efisData.components.reputation}</div>
                     <div className="text-muted-foreground font-mono">Reputation</div>
                   </div>
                   <div className="text-center">
-                    <div className="font-mono font-semibold">{demoData.components.behavioral}</div>
+                    <div className="font-mono font-semibold">{efisData.components.behavioral}</div>
                     <div className="text-muted-foreground font-mono">Behavioral</div>
                   </div>
                 </div>
