@@ -31,6 +31,8 @@ so let's return to the story of alice. she's no longer just an acronym. she's th
 - supabase backend: store user profiles and nft metadata
 - modern ui: beautiful, responsive design with tailwind css
 - real-time updates: instant profile creation and updates
+- **credit score calculator**: compare fico and efis scores side by side with interactive sliders
+- **wolfram api integration**: powered by wolfram alpha for advanced mathematical computations
 
 ## tech stack
 
@@ -93,7 +95,35 @@ create a `.env.local` file in the root directory:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+NEXT_PUBLIC_WOLFRAM_APP_ID=your_wolfram_api_key
 ```
+
+### 4. wolfram api setup (optional)
+
+for full calculator functionality:
+
+1. get your api key from [wolfram alpha developer portal](https://developer.wolframalpha.com/)
+2. add `NEXT_PUBLIC_WOLFRAM_APP_ID=your_api_key_here` to your `.env.local` file
+3. restart the development server
+
+## calculator usage
+
+the `/calculator` page allows users to:
+
+1. **compare fico and efis scores** side by side
+2. **adjust parameters** using interactive sliders for both scoring systems
+3. **see loan eligibility** and potential loan amounts based on scores
+4. **understand the mathematics** behind both scoring systems
+5. **experience real-time calculations** powered by wolfram alpha api
+
+### unified parameters (affect both scores)
+- **financial stability** (fico: 35%, efis: 30%) - affects payment history and human capital
+- **debt management** (fico: 30%, efis: 20%) - affects amounts owed and behavioral patterns
+- **credit experience** (fico: 15%, efis: 25%) - affects credit history length and reputation
+- **new activity** (fico: 10%, efis: 25%) - affects new credit applications and social capital
+- **diversity** (fico: 10%, efis: 20%) - affects credit mix and behavioral diversity
+
+this unified approach allows users to see how the same financial behaviors impact both traditional fico scoring and the innovative efis system, highlighting the differences in how each model weighs various factors.
 
 ### 4. run the development server
 
