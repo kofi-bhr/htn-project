@@ -98,6 +98,37 @@ export default function DashboardPage() {
     checkProfile();
   }, [publicKey]);
 
+  // Poll for NFT updates if profile has temporary NFT address
+  useEffect(() => {
+    if (!profile || !profile.nft_mint_address.startsWith('temp_nft_')) {
+      return;
+    }
+
+    const pollForNFT = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('wallet_address', publicKey?.toString())
+          .single();
+
+        if (!error && data && !data.nft_mint_address.startsWith('temp_nft_')) {
+          console.log('NFT minting completed!', data.nft_mint_address);
+          setProfile(data);
+          // Show success notification
+          alert(`🎉 Your NFT is ready!\n\nNFT Address: ${data.nft_mint_address}\n\nView on Solscan: https://devnet.solscan.io/token/${data.nft_mint_address}`);
+        }
+      } catch (error) {
+        console.error('Error polling for NFT:', error);
+      }
+    };
+
+    // Poll every 5 seconds
+    const interval = setInterval(pollForNFT, 5000);
+    
+    return () => clearInterval(interval);
+  }, [profile, publicKey]);
+
   const calculateEFISScore = async (profileData: Profile) => {
     setCalculating(true);
     try {
@@ -328,24 +359,31 @@ export default function DashboardPage() {
                     <p className="text-foreground font-mono text-sm break-all mb-2">
                       {profile.nft_mint_address}
                     </p>
-                    <div className="flex space-x-2">
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={() => window.open(`https://devnet.solscan.io/token/${profile.nft_mint_address}`, '_blank')}
-                        className="font-mono text-xs"
-                      >
-                        View on Solscan
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={() => navigator.clipboard.writeText(profile.nft_mint_address)}
-                        className="font-mono text-xs"
-                      >
-                        Copy Address
-                      </Button>
-                    </div>
+                    {profile.nft_mint_address.startsWith('temp_nft_') ? (
+                      <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
+                        <span className="text-yellow-600 font-mono text-xs">Minting in progress...</span>
+                      </div>
+                    ) : (
+                      <div className="flex space-x-2">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => window.open(`https://devnet.solscan.io/token/${profile.nft_mint_address}`, '_blank')}
+                          className="font-mono text-xs"
+                        >
+                          View on Solscan
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => navigator.clipboard.writeText(profile.nft_mint_address)}
+                          className="font-mono text-xs"
+                        >
+                          Copy Address
+                        </Button>
+                      </div>
+                    )}
                   </div>
                   <div className="bg-muted rounded-lg p-4">
                     <label className="block text-sm font-medium text-muted-foreground mb-2 font-mono">

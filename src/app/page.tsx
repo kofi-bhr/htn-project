@@ -68,31 +68,21 @@ export default function Home() {
 
     console.log('Starting identity forging process...');
     setIsForging(true);
-    setMintingStatus('Initializing NFT creation...');
+    setMintingStatus('Creating your profile...');
 
     try {
-      // Create NFT service instance
-      const nftService = createNFTService(connection, publicKey);
-      
-      setMintingStatus('Creating NFT metadata...');
-      console.log('Creating real NFT identity...');
-      
-      // Create the actual NFT on Solana devnet
-      const { mintAddress, transactionSignature } = await nftService.createIdentityNFT(
-        publicKey.toString(),
-        onboardingData
-      );
+      // First, create a temporary NFT address and save profile immediately
+      const tempNftAddress = `temp_nft_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       
       setMintingStatus('Saving profile to database...');
-      console.log('NFT minted successfully:', mintAddress);
-      console.log('Transaction signature:', transactionSignature);
+      console.log('Saving profile to Supabase...');
       
-      // Save profile to Supabase with real NFT address
+      // Save profile to Supabase immediately
       const { data, error } = await supabase
         .from('profiles')
         .insert({
           wallet_address: publicKey.toString(),
-          nft_mint_address: mintAddress,
+          nft_mint_address: tempNftAddress,
         })
         .select()
         .single();
@@ -108,13 +98,15 @@ export default function Home() {
       setShowOnboarding(false);
       setMintingStatus('');
       
-      // Show success message with blockchain explorer link
-      alert(`🎉 Identity NFT minted successfully!\n\nNFT Address: ${mintAddress}\nTransaction: ${transactionSignature}\n\nView on Solscan: https://devnet.solscan.io/token/${mintAddress}`);
+      // Show success message and redirect immediately
+      alert(`🎉 Profile created successfully!\n\nYou can now access your dashboard while your NFT is being minted in the background.`);
+      
+      // Start NFT minting in the background (non-blocking)
+      mintNFTInBackground(publicKey, onboardingData, data.id);
 
     } catch (error) {
       console.error('Error forging identity:', error);
       
-      // More detailed error message
       let errorMessage = 'Failed to forge identity. Please try again.';
       if (error instanceof Error) {
         errorMessage = `Error: ${error.message}`;
@@ -124,6 +116,45 @@ export default function Home() {
     } finally {
       setIsForging(false);
       setMintingStatus('');
+    }
+  };
+
+  // Background NFT minting function
+  const mintNFTInBackground = async (publicKey: any, onboardingData: OnboardingData, profileId: string) => {
+    try {
+      console.log('Starting background NFT minting...');
+      
+      // Create NFT service instance
+      const nftService = createNFTService(connection, publicKey);
+      
+      // Create the actual NFT on Solana devnet
+      const { mintAddress, transactionSignature } = await nftService.createIdentityNFT(
+        publicKey.toString(),
+        onboardingData
+      );
+      
+      console.log('NFT minted successfully:', mintAddress);
+      console.log('Transaction signature:', transactionSignature);
+      
+      // Update the profile with the real NFT address
+      const { error } = await supabase
+        .from('profiles')
+        .update({ nft_mint_address: mintAddress })
+        .eq('id', profileId);
+
+      if (error) {
+        console.error('Error updating profile with NFT address:', error);
+      } else {
+        console.log('Profile updated with real NFT address');
+        
+        // Show notification that NFT is ready
+        alert(`🎉 Your NFT has been minted!\n\nNFT Address: ${mintAddress}\nTransaction: ${transactionSignature}\n\nView on Solscan: https://devnet.solscan.io/token/${mintAddress}`);
+      }
+
+    } catch (error) {
+      console.error('Error in background NFT minting:', error);
+      // Don't show error to user since they're already on dashboard
+      // Just log it for debugging
     }
   };
 
