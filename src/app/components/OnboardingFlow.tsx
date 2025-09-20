@@ -2,10 +2,12 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import FacialRecognition from './FacialRecognition';
 
 interface OnboardingFlowProps {
   onComplete: (data: OnboardingData) => void;
@@ -39,7 +41,7 @@ export default function OnboardingFlow({ onComplete, isProcessing }: OnboardingF
     },
     {
       title: "facial recognition",
-      subtitle: "sarthak will handle this part"
+      subtitle: "secure biometric verification"
     },
     {
       title: "review your identity",
@@ -69,21 +71,15 @@ export default function OnboardingFlow({ onComplete, isProcessing }: OnboardingF
         return (
           <div className="text-center space-y-6">
             <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center mx-auto">
-              <span className="text-primary-foreground text-2xl font-bold">
-                U
-              </span>
+              <span className="text-primary-foreground text-3xl font-bold font-mono">U</span>
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-foreground mb-2">ready to forge your identity?</h2>
+              <h2 className="text-2xl font-bold text-foreground mb-2 font-mono">ready to forge your identity?</h2>
               <p className="text-muted-foreground">
                 we'll ask you a few questions and then create your unique nft identity on the solana blockchain
               </p>
             </div>
-            <Button
-              onClick={handleNext}
-              className="w-full"
-              size="lg"
-            >
+            <Button onClick={handleNext} size="lg" className="font-mono">
               let's get started
             </Button>
           </div>
@@ -94,65 +90,64 @@ export default function OnboardingFlow({ onComplete, isProcessing }: OnboardingF
           <div className="space-y-6">
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">age range</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-2 font-mono">age range</label>
                 <Select
                   value={formData.age}
                   onValueChange={(value) => setFormData({...formData, age: value})}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full font-mono">
                     <SelectValue placeholder="select your age range" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="18-24">18-24</SelectItem>
-                    <SelectItem value="25-34">25-34</SelectItem>
-                    <SelectItem value="35-44">35-44</SelectItem>
-                    <SelectItem value="45-54">45-54</SelectItem>
-                    <SelectItem value="55-64">55-64</SelectItem>
-                    <SelectItem value="65+">65+</SelectItem>
+                    <SelectItem value="18-24" className="font-mono">18-24</SelectItem>
+                    <SelectItem value="25-34" className="font-mono">25-34</SelectItem>
+                    <SelectItem value="35-44" className="font-mono">35-44</SelectItem>
+                    <SelectItem value="45-54" className="font-mono">45-54</SelectItem>
+                    <SelectItem value="55-64" className="font-mono">55-64</SelectItem>
+                    <SelectItem value="65+" className="font-mono">65+</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">what are you using this for?</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-2 font-mono">what are you using this for?</label>
                 <Select
                   value={formData.purpose}
                   onValueChange={(value) => setFormData({...formData, purpose: value})}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full font-mono">
                     <SelectValue placeholder="select your purpose" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="personal">personal identity</SelectItem>
-                    <SelectItem value="professional">professional networking</SelectItem>
-                    <SelectItem value="creative">creative projects</SelectItem>
-                    <SelectItem value="community">community building</SelectItem>
-                    <SelectItem value="other">other</SelectItem>
+                    <SelectItem value="personal" className="font-mono">personal identity</SelectItem>
+                    <SelectItem value="professional" className="font-mono">professional networking</SelectItem>
+                    <SelectItem value="creative" className="font-mono">creative projects</SelectItem>
+                    <SelectItem value="community" className="font-mono">community building</SelectItem>
+                    <SelectItem value="other" className="font-mono">other</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">where are you from?</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-2 font-mono">where are you from?</label>
                 <Input
                   type="text"
                   value={formData.location}
                   onChange={(e) => setFormData({...formData, location: e.target.value})}
                   placeholder="city, country"
+                  className="font-mono"
                 />
               </div>
             </div>
 
             <div className="flex justify-between">
-              <Button
-                onClick={handlePrevious}
-                variant="outline"
-              >
+              <Button onClick={handlePrevious} variant="outline" className="font-mono">
                 back
               </Button>
               <Button
                 onClick={handleNext}
                 disabled={!formData.age || !formData.purpose || !formData.location}
+                className="font-mono"
               >
                 next
               </Button>
@@ -162,38 +157,13 @@ export default function OnboardingFlow({ onComplete, isProcessing }: OnboardingF
 
       case 2:
         return (
-          <div className="text-center space-y-6">
-            <div className="w-32 h-32 bg-primary rounded-full flex items-center justify-center mx-auto">
-              <svg className="w-16 h-16 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-foreground mb-2">facial recognition</h2>
-              <p className="text-muted-foreground mb-4">
-                this step will be handled by sarthak - placeholder for now
-              </p>
-              <Badge variant="secondary">
-                🚧 facial recognition module coming soon - sarthak is working on it
-              </Badge>
-            </div>
-            <div className="flex justify-between">
-              <Button
-                onClick={handlePrevious}
-                variant="outline"
-              >
-                back
-              </Button>
-              <Button
-                onClick={() => {
-                  setFormData({...formData, facialRecognitionComplete: true});
-                  handleNext();
-                }}
-              >
-                skip for now
-              </Button>
-            </div>
-          </div>
+          <FacialRecognition 
+            onComplete={() => {
+              setFormData({...formData, facialRecognitionComplete: true});
+              handleNext();
+            }}
+            onPrevious={handlePrevious}
+          />
         );
 
       case 3:
@@ -201,39 +171,36 @@ export default function OnboardingFlow({ onComplete, isProcessing }: OnboardingF
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>review your identity</CardTitle>
+                <CardTitle className="font-mono">review your identity</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">age range:</span>
-                  <span className="text-foreground">{formData.age}</span>
+                  <span className="text-muted-foreground font-mono">age range:</span>
+                  <span className="text-foreground font-mono">{formData.age}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">purpose:</span>
-                  <span className="text-foreground">{formData.purpose}</span>
+                  <span className="text-muted-foreground font-mono">purpose:</span>
+                  <span className="text-foreground font-mono">{formData.purpose}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">location:</span>
-                  <span className="text-foreground">{formData.location}</span>
+                  <span className="text-muted-foreground font-mono">location:</span>
+                  <span className="text-foreground font-mono">{formData.location}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">facial recognition:</span>
-                  <span className="text-foreground">{formData.facialRecognitionComplete ? 'completed' : 'skipped'}</span>
+                  <span className="text-muted-foreground font-mono">facial recognition:</span>
+                  <span className="text-foreground font-mono">{formData.facialRecognitionComplete ? 'completed' : 'skipped'}</span>
                 </div>
               </CardContent>
             </Card>
 
             <div className="flex justify-between">
-              <Button
-                onClick={handlePrevious}
-                variant="outline"
-              >
+              <Button onClick={handlePrevious} variant="outline" className="font-mono">
                 back
               </Button>
               <Button
                 onClick={handleSubmit}
                 disabled={isProcessing}
-                className="w-48"
+                className="font-mono"
               >
                 {isProcessing ? (
                   <div className="flex items-center space-x-2">
@@ -255,36 +222,28 @@ export default function OnboardingFlow({ onComplete, isProcessing }: OnboardingF
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="max-w-2xl w-full">
+      <Card className="max-w-2xl w-full p-8">
         {/* Progress Bar */}
         <div className="mb-8">
           <div className="flex justify-between text-sm text-muted-foreground mb-2">
-            <span>step {currentStep + 1} of {steps.length}</span>
-            <span>{Math.round(((currentStep + 1) / steps.length) * 100)}% complete</span>
+            <span className="font-mono">step {currentStep + 1} of {steps.length}</span>
+            <span className="font-mono">{Math.round(((currentStep + 1) / steps.length) * 100)}% complete</span>
           </div>
-          <div className="w-full bg-muted rounded-full h-2">
-            <div 
-              className="bg-primary h-2 rounded-full transition-all duration-300"
-              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
-            ></div>
-          </div>
+          <Progress value={((currentStep + 1) / steps.length) * 100} className="h-2" />
         </div>
 
         {/* Step Content */}
-        <Card>
-          <CardHeader className="text-center">
-            <CardTitle className="text-3xl">
-              {steps[currentStep].title}
-            </CardTitle>
-            <CardDescription className="text-lg">
-              {steps[currentStep].subtitle}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {renderStepContent()}
-          </CardContent>
-        </Card>
-      </div>
+        <div className="text-center mb-6">
+          <h1 className="text-3xl font-bold text-foreground mb-2 font-mono">
+            {steps[currentStep].title}
+          </h1>
+          <p className="text-muted-foreground font-mono">
+            {steps[currentStep].subtitle}
+          </p>
+        </div>
+
+        {renderStepContent()}
+      </Card>
     </div>
   );
 }
