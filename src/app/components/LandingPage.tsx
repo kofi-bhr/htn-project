@@ -8,6 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import 'katex/dist/katex.min.css';
 import { InlineMath } from 'react-katex';
+import WorldMap from '@/components/ui/world-map';
+import { motion } from 'motion/react';
 
 interface LandingPageProps {
   onStartOnboarding: () => void;
@@ -49,21 +51,83 @@ export default function LandingPage({ onStartOnboarding, isForging, hasProfile, 
       </header>
 
       {/* Hero Section */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
+      <section className="py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        {/* Animated World Map Background */}
+        <div className="absolute inset-0 opacity-20">
+          <WorldMap
+            dots={[
+              {
+                start: { lat: 40.7128, lng: -74.0060 }, // New York
+                end: { lat: 51.5074, lng: -0.1278 }, // London
+              },
+              {
+                start: { lat: 35.6762, lng: 139.6503 }, // Tokyo
+                end: { lat: -33.8688, lng: 151.2093 }, // Sydney
+              },
+              {
+                start: { lat: -22.9068, lng: -43.1729 }, // Rio de Janeiro
+                end: { lat: 28.6139, lng: 77.209 }, // New Delhi
+              },
+              {
+                start: { lat: 1.3521, lng: 103.8198 }, // Singapore
+                end: { lat: -1.2921, lng: 36.8219 }, // Nairobi
+              },
+              {
+                start: { lat: 55.7558, lng: 37.6176 }, // Moscow
+                end: { lat: -15.7975, lng: -47.8919 }, // Brasília
+              },
+              {
+                start: { lat: 34.0522, lng: -118.2437 }, // Los Angeles
+                end: { lat: 19.4326, lng: -99.1332 }, // Mexico City
+              },
+            ]}
+            lineColor="#0ea5e9"
+          />
+        </div>
+        
+        <div className="max-w-7xl mx-auto relative z-10">
           {/* Centered Heading */}
           <div className="text-center mb-16">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground mb-6 font-mono leading-tight">
-              Your Identity. Your Capital. Your Future.
+              {"Your Identity. Your Capital. Your Future.".split(" ").map((word, idx) => (
+                <motion.span
+                  key={idx}
+                  className="inline-block mr-2"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.6, delay: idx * 0.1 }}
+                >
+                  {word}
+                </motion.span>
+              ))}
             </h1>
             <p className="text-base sm:text-lg text-muted-foreground max-w-3xl mx-auto">
-              Financial inclusion for the 1.4B ALICEs worldwide. Create your digital identity on the Solana blockchain.
+              Financial inclusion for the{" "}
+              <span className="text-primary">
+                {"1.4B_ALICEs".split("").map((char, idx) => (
+                  <motion.span
+                    key={idx}
+                    className="inline-block"
+                    initial={{ x: -10, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ duration: 0.5, delay: idx * 0.04 }}
+                  >
+                    {char}
+                  </motion.span>
+                ))}
+              </span>{" "}
+              worldwide. Create your digital identity on the Solana blockchain.
             </p>
           </div>
 
           {/* Steps Card */}
           <div className="max-w-2xl mx-auto">
-            <Card className="p-8 space-y-6">
+            <motion.div
+              initial={{ y: 30, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+            >
+              <Card className="p-8 space-y-6">
               <div className="text-center">
                 <CardTitle className="text-xl font-mono mb-2">
                   {hasProfile ? 'Welcome Back!' : 'Get Started with Project Umoja'}
@@ -179,6 +243,7 @@ export default function LandingPage({ onStartOnboarding, isForging, hasProfile, 
                 </div>
               </div>
             </Card>
+            </motion.div>
           </div>
         </div>
       </section>
