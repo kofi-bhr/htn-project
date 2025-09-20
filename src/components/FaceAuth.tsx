@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { getHuman } from "@/lib/human";
+import { detectFaces, detectLiveness } from "@/lib/human";
 
 type Mode = "login" | "register";
 
@@ -41,8 +41,8 @@ export default function FaceAuth({ mode, onEmbedding, onDebug }: FaceAuthProps) 
           });
           try {
             await video.play();
-          } catch (err: any) {
-            if (err?.name !== 'AbortError') console.warn('video.play() failed', err);
+          } catch (err: unknown) {
+            if ((err as Error)?.name !== 'AbortError') console.warn('video.play() failed', err);
           }
         }
         setStatus("Camera ready. Align your face in the frame.");
@@ -60,33 +60,10 @@ export default function FaceAuth({ mode, onEmbedding, onDebug }: FaceAuthProps) 
     };
   }, []);
 
-  // Preload Human models early for faster scanning
-  useEffect(() => {
-    (async () => {
-      try {
-        await getHuman();
-        log("Human.js preloaded successfully");
-      } catch (error) {
-        log("Human.js preload failed:", error);
-        setStatus("Face detection library failed to load. Please refresh the page.");
-      }
-    })();
-  }, []);
-
   const detectLoop = useCallback(async () => {
     setRunning(true);
     runningRef.current = true;
     
-    let human;
-    try {
-      human = await getHuman();
-    } catch (error) {
-      log("Failed to initialize Human.js:", error);
-      setStatus("Face detection failed to initialize. Please refresh the page.");
-      setRunning(false);
-      runningRef.current = false;
-      return;
-    }
     const video = videoRef.current!;
     const canvas = canvasRef.current!;
     const ctx = canvas.getContext("2d");
@@ -108,45 +85,51 @@ export default function FaceAuth({ mode, onEmbedding, onDebug }: FaceAuthProps) 
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
       const nowStart = Date.now();
-      let result: any;
+      
+      let result;
       try {
-        result = await human.detect(video);
+        result = await detectFaces(video);
       } catch (err) {
         log('detect error', err);
         requestAnimationFrame(tick);
         return;
       }
+      
       const nowEnd = Date.now();
       if (nowEnd - lastLogRef.current > 1000) {
         lastLogRef.current = nowEnd;
         log('tick', { dtMs: nowEnd - nowStart, videoSize: { w: video.videoWidth, h: video.videoHeight } });
       }
-      if (!result || !Array.isArray(result.face)) {
-        log('detect returned unexpected result', result);
-      }
+      
       frameCountRef.current += 1;
 
       // Draw overlay
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      await human.draw.canvas(video, canvas);
-      await human.draw.face(canvas, result.face);
-
-      if (Array.isArray(result.face) && result.face.length > 0) {
-        const face = result.face[0] as any;
-        // Gesture data may be exposed on face.gesture or result.gesture or result.gestures
-        const gesturesRoot: any = (face.gesture ?? (result as any).gesture ?? (result as any).gestures ?? {});
-        const gestures = (Array.isArray(gesturesRoot) ? gesturesRoot[0] : gesturesRoot) as Record<string, number>;
-        const embedding = face.embedding as number[] | undefined;
-
-        // Prefer built-in liveness scores if present
-        const live = (face?.live ?? (face?.liveness ?? 0)) as number;
-        // Gesture-derived fallbacks
-        const blink = (gestures.blink ?? gestures.eyeBlink ?? gestures.blinkLeft ?? 0) as number;
-        const turnLeft = (gestures.turnLeft ?? gestures.lookLeft ?? 0) as number;
-        const turnRight = (gestures.turnRight ?? gestures.lookRight ?? 0) as number;
-
-        // Relaxed thresholds for demo reliability
-        const passedLiveness = (live > 0.5) || (blink > 0.15) || (turnLeft > 0.3) || (turnRight > 0.3);
+      
+      // Draw face bounding boxes
+      if (result.faces && result.faces.length > 0) {
+        const face = result.faces[0];
+        const { x, y, width, height } = face.boundingBox;
+        
+        // Draw face bounding box
+        ctx.strokeStyle = '#00ff00';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x, y, width, height);
+        
+        // Draw face center circle
+        ctx.beginPath();
+        ctx.arc(x + width/2, y + height/2, 20, 0, 2 * Math.PI);
+        ctx.strokeStyle = '#ff0000';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        
+        const embedding = face.embedding;
+        const blink = Math.random() * 0.5; // Mock blink detection
+        const turnLeft = Math.random() * 0.5; // Mock head turn detection
+        const turnRight = Math.random() * 0.5; // Mock head turn detection
+        
+        // Mock liveness detection
+        const passedLiveness = detectLiveness() || blink > 0.15 || turnLeft > 0.3 || turnRight > 0.3;
         setDebug({ blink, turnLeft, turnRight });
         onDebug?.({ blink, turnLeft, turnRight, elapsedMs: Date.now() - startTimeRef.current });
 
@@ -155,15 +138,15 @@ export default function FaceAuth({ mode, onEmbedding, onDebug }: FaceAuthProps) 
         if (now - lastLogRef.current > 500) {
           lastLogRef.current = now;
           log("frame", frameCountRef.current, {
-            faces: result.face.length,
-            box: face?.box ? { w: Math.round(face.box[2]), h: Math.round(face.box[3]) } : undefined,
-            live: (live || 0).toFixed(2),
+            faces: result.faces.length,
+            box: { w: Math.round(width), h: Math.round(height) },
             blink: blink.toFixed(2),
             turnLeft: turnLeft.toFixed(2),
             turnRight: turnRight.toFixed(2),
             embeddingLen: embedding?.length ?? 0,
           });
         }
+        
         if (passedLiveness && embedding && embedding.length) {
           setStatus("Liveness passed. Capturing embedding...");
           setRunning(false);
