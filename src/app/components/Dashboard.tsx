@@ -17,7 +17,6 @@ interface DashboardProps {
   profile: Profile;
 }
 
-// Demo data based on EFIS methodology
 const demoData = {
   efisScore: 742,
   components: {
@@ -76,7 +75,6 @@ export default function Dashboard({ profile }: DashboardProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="border-b bg-card">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
@@ -98,9 +96,7 @@ export default function Dashboard({ profile }: DashboardProps) {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Section */}
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-foreground mb-2 font-mono">
             Welcome back, Alice
@@ -110,7 +106,6 @@ export default function Dashboard({ profile }: DashboardProps) {
           </p>
         </div>
 
-        {/* EFIS Score Card */}
         <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
@@ -153,7 +148,6 @@ export default function Dashboard({ profile }: DashboardProps) {
           </CardContent>
         </Card>
 
-        {/* Tabs for different views */}
         <Tabs defaultValue="overview" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="overview" className="font-mono">Overview</TabsTrigger>
@@ -164,7 +158,6 @@ export default function Dashboard({ profile }: DashboardProps) {
 
           <TabsContent value="overview" className="space-y-6">
             <div className="grid md:grid-cols-2 gap-6">
-              {/* Identity Card */}
               <Card>
                 <CardHeader>
                   <CardTitle className="font-mono">Digital Identity</CardTitle>
@@ -201,7 +194,6 @@ export default function Dashboard({ profile }: DashboardProps) {
                 </CardContent>
               </Card>
 
-              {/* Recent Activity */}
               <Card>
                 <CardHeader>
                   <CardTitle className="font-mono">Recent Activity</CardTitle>

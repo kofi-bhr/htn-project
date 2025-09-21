@@ -1,0 +1,24 @@
+debug session 3/15/25
+
+wallet connection issues:
+- phantom wallet adapter not persisting connection on page refresh
+- need to check if wallet is still connected in useEffect
+- error: "wallet not found" when trying to mint nft
+
+supabase stuff:
+- profiles table working fine
+- nft metadata storage is good
+- need to add more fields to profiles table maybe??
+
+wolfram api:
+- working perfectly! 
+- calculator page calculations are accurate
+- need to add more error handling for api limits
+
+next steps:
+1. fix wallet persistence (priority 1)
+2. improve error messages for users
+3. add loading states everywhere
+4. test on mobile devices
+
+-sarthak

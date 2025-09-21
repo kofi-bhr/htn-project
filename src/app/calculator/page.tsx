@@ -10,16 +10,12 @@ import Link from 'next/link';
 import 'katex/dist/katex.min.css';
 import { BlockMath } from 'react-katex';
 
-// Wolfram API integration
-// const WOLFRAM_APP_ID = process.env.NEXT_PUBLIC_WOLFRAM_APP_ID || 'YOUR_WOLFRAM_APP_ID';
-
 interface UnifiedParams {
-  // Unified parameters that affect both scores
-  financialStability: number; // 0-100 - affects payment history (FICO) and human capital (EFIS)
-  debtManagement: number; // 0-100 - affects amounts owed (FICO) and behavioral (EFIS)
-  creditExperience: number; // 0-100 - affects credit history length (FICO) and reputation (EFIS)
-  newActivity: number; // 0-100 - affects new credit (FICO) and social capital (EFIS)
-  diversity: number; // 0-100 - affects credit mix (FICO) and behavioral diversity (EFIS)
+  financialStability: number;
+  debtManagement: number;
+  creditExperience: number;
+  newActivity: number;
+  diversity: number;
 }
 
 interface ScoreResult {
@@ -397,8 +393,10 @@ export default function CalculatorPage() {
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="bg-muted p-4 rounded-lg">
                   <h4 className="font-semibold mb-3 font-mono">FICO Score Formula</h4>
-                  <div className="text-sm font-mono">
-                    <BlockMath math="\text{FICO} = 0.35 \times FS + 0.30 \times DM + 0.15 \times CE + 0.10 \times NA + 0.10 \times D" />
+                  <div className="text-sm font-mono overflow-x-auto">
+                    <div className="inline-block w-full text-base">
+                      <BlockMath math="\text{FICO} = 0.35 \times FS + 0.30 \times DM + 0.15 \times CE + 0.10 \times NA + 0.10 \times D" />
+                    </div>
                     <div className="mt-2 text-xs text-muted-foreground">
                       Where FS=Financial Stability, DM=Debt Management, CE=Credit Experience, NA=New Activity, D=Diversity
                     </div>
@@ -406,8 +404,10 @@ export default function CalculatorPage() {
                 </div>
                 <div className="bg-muted p-4 rounded-lg">
                   <h4 className="font-semibold mb-3 font-mono">EFIS Score Formula</h4>
-                  <div className="text-sm font-mono">
-                    <BlockMath math="\mathcal{U}_i(t) = 0.30 \times FS + 0.20 \times DM + 0.25 \times CE + 0.25 \times NA + 0.20 \times D + \text{Boost}" />
+                  <div className="text-sm font-mono overflow-x-auto">
+                    <div className="inline-block w-full text-base">
+                      <BlockMath math="\mathcal{U}_i(t) = 0.30 \times FS + 0.20 \times DM + 0.25 \times CE + 0.25 \times NA + 0.20 \times D + \text{Boost}" />
+                    </div>
                     <div className="mt-2 text-xs text-muted-foreground">
                       Where FS=Financial Stability, DM=Debt Management, CE=Credit Experience, NA=New Activity, D=Diversity
                       <br />

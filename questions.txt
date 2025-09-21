@@ -1,0 +1,28 @@
+questions for the team:
+
+1. should we add more validation to the onboarding flow? like checking if the selfie is actually a face?
+
+2. what happens if someone tries to mint multiple nfts? should we prevent that?
+
+3. the efis scoring system - do we need to explain the math better to users? most people wont understand kalman filtering lol
+
+4. mobile responsiveness - some components look weird on small screens, should we prioritize this?
+
+5. error handling - what should we show users when wolfram api is down?
+
+6. deployment - should we use vercel or try something else? vercel seems easiest
+
+7. demo data - should we create some fake profiles for the demo?
+
+8. accessibility - are we doing enough for screen readers and keyboard navigation?
+
+9. performance - the world map animation might be too heavy for some devices
+
+10. testing - how much testing should we do? unit tests vs manual testing?
+
+also wondering:
+- should we add a dark mode toggle?
+- maybe add some tooltips to explain technical terms?
+- the loading states could be more interesting than just spinners
+
+-kofi
