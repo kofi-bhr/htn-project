@@ -76,10 +76,13 @@ export default function Home() {
       
       const { data, error } = await supabase
         .from('profiles')
-        .insert({
-          wallet_address: publicKey.toString(),
-          nft_mint_address: tempNftAddress,
-        })
+        .upsert(
+          {
+            wallet_address: publicKey.toString(),
+            nft_mint_address: tempNftAddress,
+          },
+          { onConflict: 'wallet_address' }
+        )
         .select()
         .single();
 
@@ -93,9 +96,11 @@ export default function Home() {
       setShowOnboarding(false);
       setMintingStatus('');
       
-      alert(`🎉 Profile created successfully!\n\nYou can now access your dashboard while your NFT is being minted in the background.`);
-      
+      // Start minting in the background (non-blocking)
       mintNFTInBackground(publicKey, onboardingData, data.id);
+      
+      // Navigate to dashboard immediately after successful save
+      router.push('/dashboard');
 
     } catch (error) {
       console.error('Error forging identity:', error);
