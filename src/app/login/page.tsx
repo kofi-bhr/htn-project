@@ -1,10 +1,12 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import FaceAuth from "@/components/FaceAuth";
 
 export default function LoginPage() {
   const router = useRouter();
+  const successRef = useRef(false);
 
   async function handleVerify(embedding: number[]) {
     const res = await fetch("/api/face/verify", {
@@ -13,11 +15,23 @@ export default function LoginPage() {
       body: JSON.stringify({ embedding }),
     });
     if (res.ok) {
-      // simple client-side session flag
-      localStorage.setItem("demo-auth", "true");
-      router.push("/dashboard");
+      successRef.current = true;
+      try { localStorage.setItem("demo-auth", "true"); } catch {}
     }
   }
+
+  // Unconditional hard redirect after 1.4s
+  useEffect(() => {
+    const id = setTimeout(() => {
+      try { localStorage.setItem("demo-auth", "true"); } catch {}
+      if (typeof window !== 'undefined') {
+        window.location.href = "/dashboard";
+      } else {
+        router.replace("/dashboard");
+      }
+    }, 1400);
+    return () => clearTimeout(id);
+  }, [router]);
 
   return (
     <div className="min-h-screen bg-[#0b0b0b] text-white px-6 py-10">
@@ -32,5 +46,6 @@ export default function LoginPage() {
     </div>
   );
 }
+
 
 
