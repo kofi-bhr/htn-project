@@ -117,6 +117,11 @@ export default function LandingPage({ onStartOnboarding, isForging, hasProfile, 
                   About EFIS
                 </Button>
               </Link>
+              <Link href="/login">
+                <Button variant="outline" size="sm" className="font-mono">
+                  Login
+                </Button>
+              </Link>
               <WalletMultiButton className="!bg-primary hover:!bg-primary/90 !text-primary-foreground !border-0 !rounded-lg !px-6 !py-2 !font-medium" />
             </div>
           </div>

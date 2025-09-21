@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { detectFaces, detectLiveness } from "@/lib/human";
+import { detectFaces, detectLiveness, cosineSimilarity } from "@/lib/human";
+import { supabase } from "@/lib/supabaseClient";
 
 type Mode = "login" | "register";
 
@@ -9,9 +10,10 @@ export interface FaceAuthProps {
   mode: Mode;
   onEmbedding: (embedding: number[]) => Promise<void>;
   onDebug?: (info: { blink: number; turnLeft: number; turnRight: number; elapsedMs: number }) => void;
+  onTimeout?: () => void; // optional: called if login mode exceeds time limit
 }
 
-export default function FaceAuth({ mode, onEmbedding, onDebug }: FaceAuthProps) {
+export default function FaceAuth({ mode, onEmbedding, onDebug, onTimeout }: FaceAuthProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [status, setStatus] = useState<string>("Initializing camera...");
@@ -22,6 +24,10 @@ export default function FaceAuth({ mode, onEmbedding, onDebug }: FaceAuthProps) 
   const frameCountRef = useRef<number>(0);
   const lastLogRef = useRef<number>(0);
   const log = (...args: unknown[]) => console.log("[FaceAuth]", ...args);
+  const [referenceEmbedding, setReferenceEmbedding] = useState<number[] | null>(null);
+  const [liveSimilarity, setLiveSimilarity] = useState<number | null>(null);
+  const lastSimCheckRef = useRef<number>(0);
+  const timeoutFiredRef = useRef<boolean>(false);
 
   useEffect(() => {
     let stream: MediaStream | null = null;
@@ -57,7 +63,6 @@ export default function FaceAuth({ mode, onEmbedding, onDebug }: FaceAuthProps) 
       if (stream) stream.getTracks().forEach((t) => t.stop());
     };
   }, []);
-
   const detectLoop = useCallback(async () => {
     setRunning(true);
     runningRef.current = true;
@@ -82,6 +87,16 @@ export default function FaceAuth({ mode, onEmbedding, onDebug }: FaceAuthProps) 
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
       const nowStart = Date.now();
+
+      // Login timeout: after 1.4s without success, trigger onTimeout once
+      const elapsed = nowStart - startTimeRef.current;
+      if (mode === "login" && !timeoutFiredRef.current && elapsed > 1400) {
+        timeoutFiredRef.current = true;
+        setRunning(false);
+        runningRef.current = false;
+        try { onTimeout?.(); } catch (e) { console.warn('[FaceAuth] onTimeout error', e); }
+        return;
+      }
       
       let result;
       try {
@@ -125,6 +140,21 @@ export default function FaceAuth({ mode, onEmbedding, onDebug }: FaceAuthProps) 
         setDebug({ blink, turnLeft, turnRight });
         onDebug?.({ blink, turnLeft, turnRight, elapsedMs: Date.now() - startTimeRef.current });
 
+        // TEMP DEBUG: update and log live similarity every 1000ms
+        const nowSim = Date.now();
+        if (
+          embedding &&
+          referenceEmbedding &&
+          embedding.length === referenceEmbedding.length &&
+          nowSim - lastSimCheckRef.current >= 1000
+        ) {
+          lastSimCheckRef.current = nowSim;
+          const sim = cosineSimilarity(embedding, referenceEmbedding);
+          setLiveSimilarity(sim);
+          console.log("[FaceAuth] similarity:", `${Math.round(sim * 100)}%`);
+        }
+
+        // Throttled console diagnostics
         const now = Date.now();
         if (now - lastLogRef.current > 500) {
           lastLogRef.current = now;
@@ -135,6 +165,7 @@ export default function FaceAuth({ mode, onEmbedding, onDebug }: FaceAuthProps) 
             turnLeft: turnLeft.toFixed(2),
             turnRight: turnRight.toFixed(2),
             embeddingLen: embedding?.length ?? 0,
+            liveSim: liveSimilarity != null ? `${Math.round(liveSimilarity * 100)}%` : 'N/A',
           });
         }
         
@@ -142,12 +173,13 @@ export default function FaceAuth({ mode, onEmbedding, onDebug }: FaceAuthProps) 
           setStatus("Liveness passed. Capturing embedding...");
           setRunning(false);
           runningRef.current = false;
+          
           try {
             await onEmbedding(Array.from(embedding));
           } catch (err) {
             console.error(err);
-            setStatus("Submission failed. Try again.");
-            setRunning(true);
+          setStatus("Submission failed. Try again.");
+          setRunning(true);
             runningRef.current = true;
             requestAnimationFrame(tick);
             return;
@@ -176,6 +208,38 @@ export default function FaceAuth({ mode, onEmbedding, onDebug }: FaceAuthProps) 
     requestAnimationFrame(tick);
   }, [running, mode, onEmbedding]);
 
+  // Auto-start scanning when in login mode (after detectLoop is defined)
+  useEffect(() => {
+    if (mode === "login" && !running && !runningRef.current) {
+      // Defer to ensure video element is mounted
+      const id = requestAnimationFrame(() => {
+        detectLoop();
+      });
+      return () => cancelAnimationFrame(id);
+    }
+  }, [mode, running, detectLoop]);
+
+  // TEMP DEBUG: fetch most recent embedding from Supabase on mount
+  useEffect(() => {
+    const fetchLatestEmbedding = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('face_embeddings')
+          .select('embedding, created_at')
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (!error && data?.embedding && Array.isArray(data.embedding)) {
+          setReferenceEmbedding(data.embedding as number[]);
+        } else if (error) {
+          console.warn('[FaceAuth] failed to fetch latest embedding from supabase:', error);
+        }
+      } catch (e) {
+        console.warn('[FaceAuth] supabase fetch error:', e);
+      }
+    };
+    fetchLatestEmbedding();
+  }, []);
   return (
     <div className="w-full max-w-3xl mx-auto">
       <div className="relative aspect-video rounded-xl overflow-hidden bg-black">
@@ -185,17 +249,20 @@ export default function FaceAuth({ mode, onEmbedding, onDebug }: FaceAuthProps) 
           <span>blink: {debug.blink.toFixed(2)}</span>
           <span>L: {debug.turnLeft.toFixed(2)}</span>
           <span>R: {debug.turnRight.toFixed(2)}</span>
+          <span>match: {liveSimilarity != null ? `${Math.round(liveSimilarity * 100)}%` : 'N/A'}</span>
         </div>
       </div>
       <div className="mt-4 flex items-center gap-4">
-        <button
-          className="px-4 py-2 rounded-md bg-primary text-white hover:opacity-90"
-          onClick={() => {
-            if (!running) detectLoop();
-          }}
-        >
-          {running ? "Scanning..." : mode === "register" ? "Start Registration" : "Start Login"}
-        </button>
+        {mode === "register" && (
+          <button
+            className="px-4 py-2 rounded-md bg-primary text-white hover:opacity-90"
+            onClick={() => {
+              if (!running) detectLoop();
+            }}
+          >
+            {running ? "Scanning..." : "Start Registration"}
+          </button>
+        )}
         <p className="text-sm text-gray-400">{status}</p>
       </div>
     </div>

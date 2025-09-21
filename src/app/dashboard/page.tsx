@@ -15,6 +15,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { wolframService, EFISCalculationInput } from '@/lib/wolframService';
+import { useRouter } from 'next/navigation';
 
 const demoData = {
   efisScore: 0, // Will be calculated dynamically
@@ -57,6 +58,7 @@ const demoData = {
 
 export default function DashboardPage() {
   const { publicKey } = useWallet();
+  const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [efisData, setEfisData] = useState(demoData);
@@ -252,6 +254,21 @@ export default function DashboardPage() {
                   About EFIS
                 </Button>
               </Link>
+              <Button
+                variant="outline"
+                size="sm"
+                className="font-mono"
+                onClick={() => {
+                  try { localStorage.removeItem('demo-auth'); } catch {}
+                  if (typeof window !== 'undefined') {
+                    window.location.href = '/login';
+                  } else {
+                    router.replace('/login');
+                  }
+                }}
+              >
+                Log out
+              </Button>
               <WalletMultiButton className="!bg-primary hover:!bg-primary/90 !text-primary-foreground !border-0 !rounded-lg !px-6 !py-2 !font-medium" />
             </div>
           </div>

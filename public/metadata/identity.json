@@ -1,0 +1,13 @@
+{
+  "name": "Umoja Identity",
+  "symbol": "UMOJA",
+  "description": "Self-sovereign digital identity NFT for Project Umoja.",
+  "image": "https://via.placeholder.com/400x400/6366f1/ffffff?text=Umoja+Identity",
+  "attributes": [
+    { "trait_type": "Identity Type", "value": "Self-Sovereign Identity" },
+    { "trait_type": "Blockchain", "value": "Solana" },
+    { "trait_type": "Project", "value": "Umoja" }
+  ]
+}
+
+

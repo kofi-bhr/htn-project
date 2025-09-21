@@ -1,6 +1,5 @@
 import { Metaplex, keypairIdentity, irysStorage } from '@metaplex-foundation/js';
-import { Connection, PublicKey, Keypair } from '@solana/web3.js';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { Connection, PublicKey, Keypair, LAMPORTS_PER_SOL } from '@solana/web3.js';
 
 export interface NFTMetadata {
   name: string;
@@ -29,6 +28,18 @@ export class NFTService {
         providerUrl: 'https://api.devnet.solana.com',
         timeout: 60000,
       }));
+
+    // Attempt to airdrop SOL to the temp keypair on devnet so Bundlr can fund
+    // Non-blocking; failures are tolerated as we have a fallback
+    (async () => {
+      try {
+        const sig = await this.connection.requestAirdrop(tempKeypair.publicKey, 1 * LAMPORTS_PER_SOL);
+        await this.connection.confirmTransaction(sig, 'confirmed');
+        console.log('[NFTService] Airdropped 1 SOL to temp keypair');
+      } catch (e) {
+        console.warn('[NFTService] Airdrop failed (devnet likely). Proceeding with fallback if needed.', e);
+      }
+    })();
   }
 
   async createIdentityNFT(
@@ -87,8 +98,17 @@ export class NFTService {
 
       console.log('Uploading metadata to IPFS...');
       
-      const { uri } = await this.metaplex.nfts().uploadMetadata(metadata);
-      console.log('Metadata uploaded to:', uri);
+      // Upload metadata to IPFS via Bundlr (Irys). Fallback to static metadata if this fails.
+      let uri: string | undefined;
+      try {
+        const res = await this.metaplex.nfts().uploadMetadata(metadata);
+        uri = res.uri;
+        console.log('Metadata uploaded to:', uri);
+      } catch (err) {
+        console.warn('Bundlr upload failed; using static metadata fallback. Reason:', err);
+        const baseUrl = (typeof window !== 'undefined' && window.location?.origin) || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+        uri = `${baseUrl}/metadata/identity.json`;
+      }
 
       console.log('Minting NFT...');
       
