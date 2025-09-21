@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     if (!embedding || !Array.isArray(embedding) || embedding.length === 0) {
       return NextResponse.json({ error: "Invalid embedding" }, { status: 400 });
     }
-    const threshold = 0.7; // lowered threshold for easier matching in demo
+    const threshold = 0.1; // 10% similarity threshold
 
     // 1) Try Supabase first (expects a table with embeddings)
     try {

@@ -91,9 +91,9 @@ export default function FaceAuth({ mode, onEmbedding, onDebug, onTimeout }: Face
       canvas.height = video.videoHeight;
       const nowStart = Date.now();
 
-      // Login timeout: after 1.4s without success, trigger onTimeout once
+      // Login timeout: after 12s without success, trigger onTimeout once
       const elapsed = nowStart - startTimeRef.current;
-      if (mode === "login" && !timeoutFiredRef.current && elapsed > 1400) {
+      if (mode === "login" && !timeoutFiredRef.current && elapsed > 12000) {
         timeoutFiredRef.current = true;
         setRunning(false);
         runningRef.current = false;
