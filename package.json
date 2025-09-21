@@ -10,8 +10,12 @@
   },
   "dependencies": {
     "@metaplex-foundation/js": "^0.20.1",
+    "@radix-ui/react-progress": "^1.1.7",
     "@radix-ui/react-select": "^2.2.6",
+    "@radix-ui/react-separator": "^1.1.7",
+    "@radix-ui/react-slider": "^1.3.6",
     "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-tabs": "^1.1.13",
     "@solana/wallet-adapter-react": "^0.15.39",
     "@solana/wallet-adapter-react-ui": "^0.9.35",
     "@solana/wallet-adapter-wallets": "^0.19.37",
@@ -22,12 +26,19 @@
     "@vladmandic/human": "^3.3.6",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dotted-map": "^2.2.3",
+    "katex": "^0.16.22",
     "lottie-react": "^2.4.1",
     "lucide-react": "^0.544.0",
+    "motion": "^12.23.16",
     "next": "15.5.3",
+    "next-themes": "^0.4.6",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "tailwind-merge": "^3.3.1"
+    "react-katex": "^3.1.0",
+    "recharts": "^2.15.4",
+    "tailwind-merge": "^3.3.1",
+    "wolfram-alpha-api": "^0.2.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

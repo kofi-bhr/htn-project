@@ -58,6 +58,28 @@ Open http://localhost:3000 and use the buttons to Register/Login. Grant webcam a
 
 ## Getting Started
 
+## the story of alice
+
+i want to start by telling you a story about a woman named alice. she's a low-income entrepreneur and a mother, striving to build a better future for her children. but there's just one caveat. she doesn't have a bank account.
+
+no bank account means no formal credit, limited ownership, no way to build a financial identity. she is fundamentally invisible to the global economy. and what's terrifying is that alice is not just one person. she is 1.4 billion people across the world without a bank account.
+
+you see, alice isn't just a name. it's an acronym: asset-limited, income-constrained, but employed. her story is a global crisis.
+
+as technologists, we sought to understand the root of this problem. it's not just bureaucracy; it's a market failure driven by a core economic principle: information asymmetry. big banks have no data on alice. they can't price the risk of a loan, so they don't offer one. they see her not as a person, but as a void of information.
+
+for people like alice—refugees, immigrants, creators of color—the system isn't just broken; it was never built for them in the first place. and that's why we built a new system.
+
+this is project umoja. it's not a sim card; it's a globally accessible web platform that runs on any device with a browser. you sign up with a selfie, which serves as the foundation for your self-sovereign identity. we don't store this on a server. we mint it as a soulbound nft on the solana blockchain. it is a permanent, digital asset that you own.
+
+this nft is your key. it's your connection to a new financial ecosystem through which we can provide data-validated microloans.
+
+so how do we solve the information asymmetry problem? with mathematics. when alice requests a loan, our wolfram-powered oracle uses principles from the kalman filter—an algorithm used by nasa to navigate spacecraft with noisy data. it takes her plan and real-world economic indicators to produce a clear, probabilistic assessment of her project's viability.
+
+then, to build trust over time, we apply signaling theory. every repaid loan automatically mints a 'reputation token' to her wallet. it's a non-transferable, on-chain proof of her reliability. she is forging her own credit score in public on the blockchain.
+
+so let's return to the story of alice. she's no longer just an acronym. she's thriving. she's building her business, providing for her children. it's because project umoja became a part of her story. and we hope that you can, too.
+
 ## features
 
 - solana wallet integration: connect with phantom wallet
@@ -65,6 +87,8 @@ Open http://localhost:3000 and use the buttons to Register/Login. Grant webcam a
 - supabase backend: store user profiles and nft metadata
 - modern ui: beautiful, responsive design with tailwind css
 - real-time updates: instant profile creation and updates
+- **credit score calculator**: compare fico and efis scores side by side with interactive sliders
+- **wolfram api integration**: powered by wolfram alpha for advanced mathematical computations
 
 ## tech stack
 
@@ -127,7 +151,35 @@ create a `.env.local` file in the root directory:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+NEXT_PUBLIC_WOLFRAM_APP_ID=your_wolfram_api_key
 ```
+
+### 4. wolfram api setup (optional)
+
+for full calculator functionality:
+
+1. get your api key from [wolfram alpha developer portal](https://developer.wolframalpha.com/)
+2. add `NEXT_PUBLIC_WOLFRAM_APP_ID=your_api_key_here` to your `.env.local` file
+3. restart the development server
+
+## calculator usage
+
+the `/calculator` page allows users to:
+
+1. **compare fico and efis scores** side by side
+2. **adjust parameters** using interactive sliders for both scoring systems
+3. **see loan eligibility** and potential loan amounts based on scores
+4. **understand the mathematics** behind both scoring systems
+5. **experience real-time calculations** powered by wolfram alpha api
+
+### unified parameters (affect both scores)
+- **financial stability** (fico: 35%, efis: 30%) - affects payment history and human capital
+- **debt management** (fico: 30%, efis: 20%) - affects amounts owed and behavioral patterns
+- **credit experience** (fico: 15%, efis: 25%) - affects credit history length and reputation
+- **new activity** (fico: 10%, efis: 25%) - affects new credit applications and social capital
+- **diversity** (fico: 10%, efis: 20%) - affects credit mix and behavioral diversity
+
+this unified approach allows users to see how the same financial behaviors impact both traditional fico scoring and the innovative efis system, highlighting the differences in how each model weighs various factors.
 
 ### 4. run the development server
 
