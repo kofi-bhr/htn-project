@@ -16,7 +16,6 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { wolframService, EFISCalculationInput } from '@/lib/wolframService';
 
-// Demo data based on EFIS methodology
 const demoData = {
   efisScore: 0, // Will be calculated dynamically
   components: {
@@ -63,7 +62,6 @@ export default function DashboardPage() {
   const [efisData, setEfisData] = useState(demoData);
   const [calculating, setCalculating] = useState(false);
 
-  // Check if user profile exists when wallet connects
   useEffect(() => {
     const checkProfile = async () => {
       if (!publicKey) {
@@ -83,7 +81,6 @@ export default function DashboardPage() {
           console.error('Error checking profile:', error);
         } else if (data) {
           setProfile(data);
-          // Calculate EFIS score using Wolfram
           await calculateEFISScore(data);
         } else {
           setProfile(null);
@@ -98,7 +95,6 @@ export default function DashboardPage() {
     checkProfile();
   }, [publicKey]);
 
-  // Poll for NFT updates if profile has temporary NFT address
   useEffect(() => {
     if (!profile || !profile.nft_mint_address.startsWith('temp_nft_')) {
       return;
@@ -115,7 +111,6 @@ export default function DashboardPage() {
         if (!error && data && !data.nft_mint_address.startsWith('temp_nft_')) {
           console.log('NFT minting completed!', data.nft_mint_address);
           setProfile(data);
-          // Show success notification
           alert(`🎉 Your NFT is ready!\n\nNFT Address: ${data.nft_mint_address}\n\nView on Solscan: https://devnet.solscan.io/token/${data.nft_mint_address}`);
         }
       } catch (error) {
@@ -123,7 +118,6 @@ export default function DashboardPage() {
       }
     };
 
-    // Poll every 5 seconds
     const interval = setInterval(pollForNFT, 5000);
     
     return () => clearInterval(interval);
@@ -132,15 +126,13 @@ export default function DashboardPage() {
   const calculateEFISScore = async (profileData: Profile) => {
     setCalculating(true);
     try {
-      // Use realistic input data based on Sarah Chen's case study
-      // These would come from actual user data in production
       const input: EFISCalculationInput = {
-        humanCapital: 48000, // Annual income (like Sarah's $48k)
-        socialCapital: 85, // Community endorsements and network strength
-        reputation: 90, // Loan repayment history and reputation tokens
-        behavioral: 95, // Financial discipline and time preferences (25% savings rate)
+        humanCapital: 48000,
+        socialCapital: 85,
+        reputation: 90,
+        behavioral: 95,
         weights: {
-          humanCapital: 0.35, // Optimized weights from empirical analysis
+          humanCapital: 0.35,
           socialCapital: 0.28,
           reputation: 0.22,
           behavioral: 0.15
@@ -245,7 +237,6 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="border-b bg-card">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
@@ -267,9 +258,7 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Section */}
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-foreground mb-2 font-mono">
             Welcome back, Alice
@@ -279,7 +268,6 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* EFIS Score Card */}
         <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
@@ -327,7 +315,6 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Tabs for different views */}
         <Tabs defaultValue="overview" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="overview" className="font-mono">Overview</TabsTrigger>
@@ -338,7 +325,6 @@ export default function DashboardPage() {
 
           <TabsContent value="overview" className="space-y-6">
             <div className="grid md:grid-cols-2 gap-6">
-              {/* Identity Card */}
               <Card>
                 <CardHeader>
                   <CardTitle className="font-mono">Digital Identity</CardTitle>
@@ -400,7 +386,6 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
 
-              {/* Profile Strength Radar Chart */}
               <Card>
                 <CardHeader className="items-center pb-4">
                   <CardTitle className="font-mono">Profile Strength</CardTitle>
@@ -484,7 +469,6 @@ export default function DashboardPage() {
               </Card>
             </div>
 
-            {/* Recent Activity */}
             <Card>
               <CardHeader>
                 <CardTitle className="font-mono">Recent Activity</CardTitle>
@@ -527,7 +511,6 @@ export default function DashboardPage() {
 
           <TabsContent value="income" className="space-y-6">
             <div className="grid md:grid-cols-2 gap-6">
-              {/* Financial Activity Over Time */}
               <Card className="pt-0">
                 <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
                   <div className="grid flex-1 gap-1">
@@ -607,7 +590,6 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
 
-              {/* Spending Categories */}
               <Card>
                 <CardHeader>
                   <CardTitle className="font-mono">Spending Categories</CardTitle>

@@ -1,0 +1,25 @@
+random ideas for project umoja:
+
+1. add social features?? like users can see other peoples profiles (anonymized)
+2. maybe add a leaderboard for reputation tokens
+3. gamification elements - badges for different achievements
+4. integration with other defi protocols
+5. mobile app version?? prob not for hackathon tho
+
+technical stuff:
+- need to optimize the world map component, its laggy on mobile
+- add more animations to make it feel more polished
+- the typewriter effect is cool but maybe too slow?
+- consider adding sound effects?? idk might be too much
+
+marketing ideas:
+- create some demo videos
+- write blog posts about the math behind efis
+- maybe reach out to some fintech influencers??
+
+also need to remember:
+- test everything on different browsers
+- make sure it works on slow connections
+- accessibility stuff (screen readers, etc)
+
+-kofi

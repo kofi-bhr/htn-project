@@ -239,7 +239,6 @@ export default function OnboardingFlow({ onComplete, isProcessing, mintingStatus
               mode="register"
               onEmbedding={async (embedding) => {
                 try {
-                  // Register the face embedding
                   const response = await fetch('/api/face/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -350,7 +349,6 @@ export default function OnboardingFlow({ onComplete, isProcessing, mintingStatus
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="max-w-2xl w-full p-8">
-        {/* Progress Bar */}
         <div className="mb-8">
           <div className="flex justify-between text-sm text-muted-foreground mb-2">
             <span className="font-mono">step {currentStep + 1} of {steps.length}</span>
@@ -359,7 +357,6 @@ export default function OnboardingFlow({ onComplete, isProcessing, mintingStatus
           <Progress value={((currentStep + 1) / steps.length) * 100} className="h-2" />
         </div>
 
-        {/* Step Content */}
         <div className="text-center mb-6">
           <h1 className="text-3xl font-bold text-foreground mb-2 font-mono">
             {steps[currentStep].title}

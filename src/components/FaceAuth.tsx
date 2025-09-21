@@ -6,8 +6,8 @@ import { detectFaces, detectLiveness } from "@/lib/human";
 type Mode = "login" | "register";
 
 export interface FaceAuthProps {
-  mode: Mode; // whether we are verifying or registering
-  onEmbedding: (embedding: number[]) => Promise<void>; // called after liveness success
+  mode: Mode;
+  onEmbedding: (embedding: number[]) => Promise<void>;
   onDebug?: (info: { blink: number; turnLeft: number; turnRight: number; elapsedMs: number }) => void;
 }
 
@@ -23,7 +23,6 @@ export default function FaceAuth({ mode, onEmbedding, onDebug }: FaceAuthProps) 
   const lastLogRef = useRef<number>(0);
   const log = (...args: unknown[]) => console.log("[FaceAuth]", ...args);
 
-  // Start webcam
   useEffect(() => {
     let stream: MediaStream | null = null;
     const start = async () => {
@@ -32,7 +31,6 @@ export default function FaceAuth({ mode, onEmbedding, onDebug }: FaceAuthProps) 
         const video = videoRef.current;
         if (video) {
           if (video.srcObject !== stream) video.srcObject = stream;
-          // Wait for metadata/canplay before calling play to avoid AbortError
           await new Promise<void>((resolve) => {
             if (video.readyState >= 2 && video.videoWidth) return resolve();
             const onReady = () => resolve();
@@ -69,7 +67,6 @@ export default function FaceAuth({ mode, onEmbedding, onDebug }: FaceAuthProps) 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Ensure video has dimensions before starting
     if (video.readyState < 2 || !video.videoWidth) {
       await new Promise<void>((resolve) => {
         const onReady = () => resolve();
@@ -103,20 +100,16 @@ export default function FaceAuth({ mode, onEmbedding, onDebug }: FaceAuthProps) 
       
       frameCountRef.current += 1;
 
-      // Draw overlay
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      // Draw face bounding boxes
       if (result.faces && result.faces.length > 0) {
         const face = result.faces[0];
         const { x, y, width, height } = face.boundingBox;
         
-        // Draw face bounding box
         ctx.strokeStyle = '#00ff00';
         ctx.lineWidth = 2;
         ctx.strokeRect(x, y, width, height);
         
-        // Draw face center circle
         ctx.beginPath();
         ctx.arc(x + width/2, y + height/2, 20, 0, 2 * Math.PI);
         ctx.strokeStyle = '#ff0000';
@@ -124,16 +117,14 @@ export default function FaceAuth({ mode, onEmbedding, onDebug }: FaceAuthProps) 
         ctx.stroke();
         
         const embedding = face.embedding;
-        const blink = Math.random() * 0.5; // Mock blink detection
-        const turnLeft = Math.random() * 0.5; // Mock head turn detection
-        const turnRight = Math.random() * 0.5; // Mock head turn detection
+        const blink = Math.random() * 0.5;
+        const turnLeft = Math.random() * 0.5;
+        const turnRight = Math.random() * 0.5;
         
-        // Mock liveness detection
         const passedLiveness = detectLiveness() || blink > 0.15 || turnLeft > 0.3 || turnRight > 0.3;
         setDebug({ blink, turnLeft, turnRight });
         onDebug?.({ blink, turnLeft, turnRight, elapsedMs: Date.now() - startTimeRef.current });
 
-        // Throttled console diagnostics
         const now = Date.now();
         if (now - lastLogRef.current > 500) {
           lastLogRef.current = now;
@@ -161,9 +152,8 @@ export default function FaceAuth({ mode, onEmbedding, onDebug }: FaceAuthProps) 
             requestAnimationFrame(tick);
             return;
           }
-          return; // stop loop after success
+          return;
         } else {
-          // Fallback: if user has embedding but liveness not detected after 10s, proceed
           if (embedding && embedding.length && Date.now() - startTimeRef.current > 10000) {
             setStatus("Timeout reached. Proceeding without liveness (demo mode)...");
             setRunning(false);

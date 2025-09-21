@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
 
-// For demo: persist a single user embedding to a local JSON file under .data
 const DATA_DIR = path.join(process.cwd(), ".data");
 const FILE = path.join(DATA_DIR, "embeddings.json");
 

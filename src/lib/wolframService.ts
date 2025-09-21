@@ -1,11 +1,8 @@
-// Wolfram Alpha API service for mathematical calculations
-// This service handles EFIS score calculations and other mathematical operations
-
 export interface EFISCalculationInput {
-  humanCapital: number; // Annual income in dollars
-  socialCapital: number; // Social network strength (0-100)
-  reputation: number; // Reputation score (0-100)
-  behavioral: number; // Behavioral indicators (0-100)
+  humanCapital: number;
+  socialCapital: number;
+  reputation: number;
+  behavioral: number;
   weights?: {
     humanCapital: number;
     socialCapital: number;
@@ -29,17 +26,11 @@ export class WolframService {
   private apiKey: string;
 
   constructor() {
-    // In a real implementation, this would come from environment variables
     this.apiKey = process.env.WOLFRAM_APP_ID || 'demo-key';
   }
 
-  /**
-   * Calculate EFIS score using the proper mathematical formula from the research paper
-   * Formula: U_i(t) = ω_H * H_i(t) + ω_S * S_i(t) + ω_R * R_i(t) + ω_B * B_i(t)
-   */
   async calculateEFISScore(input: EFISCalculationInput): Promise<EFISCalculationResult> {
     try {
-      // Default weights if not provided - calibrated from research
       const weights = input.weights || {
         humanCapital: 0.30,
         socialCapital: 0.25,
@@ -47,7 +38,6 @@ export class WolframService {
         behavioral: 0.20
       };
 
-      // Calculate each component using the proper EFIS formulas
       const humanCapitalScore = this.calculateHumanCapital(input.humanCapital);
       const socialCapitalScore = this.calculateSocialCapital(input.socialCapital);
       const reputationScore = this.calculateReputation(input.reputation);

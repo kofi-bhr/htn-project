@@ -1,0 +1,12 @@
+ok soooo the landing page is basically done but i need to fix the wallet connection stuff
+phantom wallet keeps disconnecting randomly and its rly annoying
+also the nft minting is working but the metadata is kinda basic rn
+
+todo:
+- fix wallet persistence 
+- add better error handling for failed transactions
+- maybe add some loading states?? idk
+- the calculator page needs work too but thats for later
+
+btw the wolfram api integration is working great! the math stuff looks sooo cool
+-kofi

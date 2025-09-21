@@ -1,0 +1,34 @@
+team meeting 3/14/25
+
+attendance: kofi, sarthak
+
+agenda:
+1. landing page review
+2. calculator functionality 
+3. deployment prep
+
+discussion:
+- landing page looks good but needs more polish
+- calculator is working well with wolfram integration
+- need to add more error handling throughout
+- wallet connection issues are still a problem
+
+decisions made:
+- focus on core functionality first
+- add loading states to all async operations
+- improve error messages for better ux
+- test on multiple devices before submission
+
+action items:
+kofi: fix wallet persistence issues
+sarthak: improve calculator ui/ux
+both: test everything thoroughly
+
+next meeting: 3/16/25
+
+notes:
+- hackathon deadline is approaching fast!
+- need to prioritize features vs polish
+- maybe cut some nice-to-have features if time is tight
+
+-sarthak

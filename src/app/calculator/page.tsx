@@ -10,16 +10,12 @@ import Link from 'next/link';
 import 'katex/dist/katex.min.css';
 import { BlockMath } from 'react-katex';
 
-// Wolfram API integration
-// const WOLFRAM_APP_ID = process.env.NEXT_PUBLIC_WOLFRAM_APP_ID || 'YOUR_WOLFRAM_APP_ID';
-
 interface UnifiedParams {
-  // Unified parameters that affect both scores
-  financialStability: number; // 0-100 - affects payment history (FICO) and human capital (EFIS)
-  debtManagement: number; // 0-100 - affects amounts owed (FICO) and behavioral (EFIS)
-  creditExperience: number; // 0-100 - affects credit history length (FICO) and reputation (EFIS)
-  newActivity: number; // 0-100 - affects new credit (FICO) and social capital (EFIS)
-  diversity: number; // 0-100 - affects credit mix (FICO) and behavioral diversity (EFIS)
+  financialStability: number;
+  debtManagement: number;
+  creditExperience: number;
+  newActivity: number;
+  diversity: number;
 }
 
 interface ScoreResult {

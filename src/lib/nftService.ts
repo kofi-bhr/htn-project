@@ -20,7 +20,6 @@ export class NFTService {
   constructor(connection: Connection, walletPublicKey: PublicKey) {
     this.connection = connection;
     
-    // Create a temporary keypair for the service (in production, you'd use a proper keypair)
     const tempKeypair = Keypair.generate();
     
     this.metaplex = Metaplex.make(this.connection)
@@ -45,12 +44,11 @@ export class NFTService {
     try {
       console.log('Creating NFT metadata...');
       
-      // Create NFT metadata
       const metadata: NFTMetadata = {
         name: `Umoja Identity - ${onboardingData.name}`,
         symbol: 'UMOJA',
         description: `Self-sovereign digital identity for ${onboardingData.name}. This soulbound NFT represents a unique digital identity forged on the Solana blockchain, enabling access to decentralized financial services.`,
-        image: 'https://via.placeholder.com/400x400/6366f1/ffffff?text=Umoja+Identity', // Placeholder image
+        image: 'https://via.placeholder.com/400x400/6366f1/ffffff?text=Umoja+Identity',
         attributes: [
           {
             trait_type: 'Identity Type',
@@ -89,18 +87,16 @@ export class NFTService {
 
       console.log('Uploading metadata to IPFS...');
       
-      // Upload metadata to IPFS via Bundlr
       const { uri } = await this.metaplex.nfts().uploadMetadata(metadata);
       console.log('Metadata uploaded to:', uri);
 
       console.log('Minting NFT...');
       
-      // Create the NFT
       const { nft, response } = await this.metaplex.nfts().create({
         uri,
         name: metadata.name,
         symbol: metadata.symbol,
-        sellerFeeBasisPoints: 0, // No royalties for identity NFTs
+        sellerFeeBasisPoints: 0,
         creators: [
           {
             address: new PublicKey(walletAddress),
@@ -110,7 +106,7 @@ export class NFTService {
         ],
         collection: null,
         uses: null,
-        isMutable: false, // Make it immutable for identity
+        isMutable: false,
         maxSupply: null,
         isCollection: false,
       });
@@ -143,7 +139,6 @@ export class NFTService {
   }
 }
 
-// Helper function to create NFT service instance
 export const createNFTService = (connection: Connection, walletPublicKey: PublicKey) => {
   return new NFTService(connection, walletPublicKey);
 };
